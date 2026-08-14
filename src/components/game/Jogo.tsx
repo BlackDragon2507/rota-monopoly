@@ -26,6 +26,13 @@ const novosJogadores = (): Jogador[] => [
 
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+type Aviso = {
+  titulo: string;
+  texto: string;
+  delta?: number;
+  tom: "bom" | "ruim" | "neutro";
+};
+
 export function Jogo() {
   const [jogadores, setJogadores] = useState<Jogador[]>(novosJogadores);
   const [donos, setDonos] = useState<Record<number, number | undefined>>({});
