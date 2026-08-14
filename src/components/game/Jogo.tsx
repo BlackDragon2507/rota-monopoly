@@ -43,6 +43,7 @@ export function Jogo() {
     "Bem-vindo ao RotaLog! Role os dados para expandir seu império logístico.",
   ]);
   const [compra, setCompra] = useState<number | null>(null);
+  const [aviso, setAviso] = useState<Aviso | null>(null);
   const [fim, setFim] = useState(false);
 
   const ref = useRef({ jogadores, donos, atual });
