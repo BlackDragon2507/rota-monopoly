@@ -63,6 +63,15 @@ export function Jogo() {
     [addLog, ajustar],
   );
 
+  const mostrar = useCallback(
+    async (a: Aviso) => {
+      setAviso(a);
+      await espera(1800);
+      setAviso(null);
+    },
+    [],
+  );
+
   const resolver = useCallback(
     async (jogadorId: number, idx: number) => {
       const tile = TABULEIRO[idx];
@@ -73,8 +82,22 @@ export function Jogo() {
         const dono = ref.current.donos[idx];
         if (dono === undefined) {
           if (jog.cpu) {
-            if (jog.dinheiro > tile.preco * 1.6) comprar(idx, jogadorId);
-            else addLog(`${jog.nome} dispensou ${tile.nome}.`);
+            if (jog.dinheiro > tile.preco * 1.6) {
+              comprar(idx, jogadorId);
+              await mostrar({
+                titulo: tile.nome,
+                texto: `${jog.nome} comprou este ${CATEGORIA_LABEL[tile.categoria].toLowerCase()}.`,
+                delta: -tile.preco,
+                tom: "neutro",
+              });
+            } else {
+              addLog(`${jog.nome} dispensou ${tile.nome}.`);
+              await mostrar({
+                titulo: tile.nome,
+                texto: `${jog.nome} dispensou a compra.`,
+                tom: "neutro",
+              });
+            }
           } else {
             setCompra(idx);
             return;
@@ -86,28 +109,65 @@ export function Jogo() {
           addLog(
             `${jog.nome} pagou R$ ${tile.aluguel} de frete a ${donoJog.nome} em ${tile.nome}.`,
           );
+          await mostrar({
+            titulo: tile.nome,
+            texto: `${jog.nome} pagou frete a ${donoJog.nome}.`,
+            delta: -tile.aluguel,
+            tom: "ruim",
+          });
         } else {
           addLog(`${jog.nome} operou em ${tile.nome} (ativo próprio).`);
+          await mostrar({
+            titulo: tile.nome,
+            texto: `${jog.nome} está operando em ativo próprio.`,
+            tom: "neutro",
+          });
         }
       } else if (tile.kind === "taxa") {
         ajustar(jogadorId, -tile.valor);
         addLog(`${jog.nome} pagou ${tile.nome}: R$ ${tile.valor}.`);
+        await mostrar({
+          titulo: tile.nome,
+          texto: `${jog.nome} teve que pagar a cobrança.`,
+          delta: -tile.valor,
+          tom: "ruim",
+        });
       } else if (tile.kind === "bonus") {
         ajustar(jogadorId, tile.valor);
         addLog(`${jog.nome} recebeu ${tile.nome}: +R$ ${tile.valor}.`);
+        await mostrar({
+          titulo: tile.nome,
+          texto: `${jog.nome} recebeu um pagamento extra.`,
+          delta: tile.valor,
+          tom: "bom",
+        });
       } else if (tile.kind === "evento") {
         const ev = EVENTOS[Math.floor(Math.random() * EVENTOS.length)]!;
         ajustar(jogadorId, ev.delta);
-        addLog(
-          `${jog.nome} — ${ev.texto} (${ev.delta > 0 ? "+" : ""}R$ ${ev.delta})`,
-        );
+        addLog(`${jog.nome} — ${ev.texto} (${ev.delta > 0 ? "+" : ""}R$ ${ev.delta})`);
+        await mostrar({
+          titulo: "Boletim Logístico",
+          texto: ev.texto,
+          delta: ev.delta,
+          tom: ev.delta >= 0 ? "bom" : "ruim",
+        });
       } else if (tile.kind === "parada") {
         addLog(`${jog.nome} parou em ${tile.nome}. Nada acontece.`);
+        await mostrar({
+          titulo: tile.nome,
+          texto: `${jog.nome} perdeu tempo aqui, mas nada foi cobrado.`,
+          tom: "neutro",
+        });
       } else {
         addLog(`${jog.nome} chegou ao ${tile.nome}.`);
+        await mostrar({
+          titulo: tile.nome,
+          texto: `${jog.nome} chegou ao hub.`,
+          tom: "neutro",
+        });
       }
     },
-    [addLog, ajustar, comprar],
+    [addLog, ajustar, comprar, mostrar],
   );
 
   const proximoTurno = useCallback(() => {
