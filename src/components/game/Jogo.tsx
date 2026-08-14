@@ -276,12 +276,40 @@ export function Jogo() {
             mercado e construa o maior patrimônio logístico do país.
           </p>
         </header>
-        <Board
-          jogadores={jogadores}
-          donos={donos}
-          atual={atual}
-          destaque={jogadorDaVez.posicao}
-        />
+        <div className="relative">
+          <Board
+            jogadores={jogadores}
+            donos={donos}
+            atual={atual}
+            destaque={jogadorDaVez.posicao}
+          />
+          {aviso && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
+              <div className="animate-pop w-full max-w-sm rounded-2xl border border-border bg-popover/95 p-5 text-center shadow-elev backdrop-blur">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-accent">
+                  Casa
+                </p>
+                <p className="font-display mt-1 text-xl font-bold text-foreground">
+                  {aviso.titulo}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{aviso.texto}</p>
+                {aviso.delta !== undefined && (
+                  <p
+                    className={`font-display mt-3 text-2xl font-bold ${
+                      aviso.tom === "ruim"
+                        ? "text-destructive"
+                        : aviso.tom === "bom"
+                          ? "text-success"
+                          : "text-primary"
+                    }`}
+                  >
+                    {aviso.delta > 0 ? "+" : "−"}R$ {Math.abs(aviso.delta)}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <aside className="space-y-4">
