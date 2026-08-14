@@ -85,18 +85,31 @@ export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props)
                   style={{ background: donoJog.cor }}
                 />
               )}
-              <div className="flex gap-0.5">
+              <div className="flex items-end gap-0.5">
                 {aqui.map((j) => (
-                  <span
+                  <svg
                     key={j.id}
+                    viewBox="0 0 24 32"
                     className={cn(
-                      "size-2.5 rounded-full ring-2 ring-background transition-transform md:size-3",
-                      jogadores[atual]?.id === j.id && "scale-125",
+                      "h-4 w-3 drop-shadow-md transition-transform md:h-5 md:w-4",
+                      jogadores[atual]?.id === j.id && "-translate-y-0.5 scale-125",
                     )}
-                    style={{ background: j.cor }}
-                  />
+                    style={{ color: j.cor }}
+                    aria-label={`Peão de ${j.nome}`}
+                  >
+                    <ellipse cx="12" cy="29" rx="9" ry="3" fill="currentColor" stroke="hsl(var(--background))" strokeWidth="1.5" />
+                    <path
+                      d="M12 2c3 0 5.2 2.3 5.2 5.1 0 1.7-.8 3.2-2.1 4.1 2.4 1.7 4 4.5 4.4 7.8.1 1-.6 1.9-1.6 1.9H6.1c-1 0-1.7-.9-1.6-1.9.4-3.3 2-6.1 4.4-7.8-1.3-.9-2.1-2.4-2.1-4.1C6.8 4.3 9 2 12 2Z"
+                      fill="currentColor"
+                      stroke="hsl(var(--background))"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
+                    <rect x="4.5" y="21" width="15" height="4.5" rx="2.2" fill="currentColor" stroke="hsl(var(--background))" strokeWidth="1.5" />
+                  </svg>
                 ))}
               </div>
+
             </button>
           );
         })}
