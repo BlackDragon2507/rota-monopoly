@@ -285,7 +285,7 @@ export function Jogo() {
           />
           {aviso && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
-              <div className="animate-pop w-full max-w-sm rounded-2xl border border-border bg-popover/95 p-5 text-center shadow-elev backdrop-blur">
+              <div className="animate-pop w-full max-w-sm rounded-2xl border border-primary/40 bg-popover p-5 text-center shadow-elev backdrop-blur">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-accent">
                   Casa
                 </p>
