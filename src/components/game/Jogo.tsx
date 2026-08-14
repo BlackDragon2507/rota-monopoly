@@ -281,7 +281,7 @@ export function Jogo() {
       </aside>
 
       <Dialog open={compra !== null} onOpenChange={() => {}}>
-        <DialogContent showCloseButton={false}>
+        <DialogContent>
           {tileCompra?.kind === "prop" && (
             <>
               <DialogHeader>
@@ -320,7 +320,7 @@ export function Jogo() {
       </Dialog>
 
       <Dialog open={fim} onOpenChange={() => {}}>
-        <DialogContent showCloseButton={false}>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle className="font-display">Fim de jogo</DialogTitle>
             <DialogDescription>
