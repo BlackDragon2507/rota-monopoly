@@ -26,6 +26,13 @@ const novosJogadores = (): Jogador[] => [
 
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+type Aviso = {
+  titulo: string;
+  texto: string;
+  delta?: number;
+  tom: "bom" | "ruim" | "neutro";
+};
+
 export function Jogo() {
   const [jogadores, setJogadores] = useState<Jogador[]>(novosJogadores);
   const [donos, setDonos] = useState<Record<number, number | undefined>>({});
@@ -36,6 +43,7 @@ export function Jogo() {
     "Bem-vindo ao RotaLog! Role os dados para expandir seu império logístico.",
   ]);
   const [compra, setCompra] = useState<number | null>(null);
+  const [aviso, setAviso] = useState<Aviso | null>(null);
   const [fim, setFim] = useState(false);
 
   const ref = useRef({ jogadores, donos, atual });
@@ -63,6 +71,15 @@ export function Jogo() {
     [addLog, ajustar],
   );
 
+  const mostrar = useCallback(
+    async (a: Aviso) => {
+      setAviso(a);
+      await espera(1800);
+      setAviso(null);
+    },
+    [],
+  );
+
   const resolver = useCallback(
     async (jogadorId: number, idx: number) => {
       const tile = TABULEIRO[idx];
@@ -73,8 +90,22 @@ export function Jogo() {
         const dono = ref.current.donos[idx];
         if (dono === undefined) {
           if (jog.cpu) {
-            if (jog.dinheiro > tile.preco * 1.6) comprar(idx, jogadorId);
-            else addLog(`${jog.nome} dispensou ${tile.nome}.`);
+            if (jog.dinheiro > tile.preco * 1.6) {
+              comprar(idx, jogadorId);
+              await mostrar({
+                titulo: tile.nome,
+                texto: `${jog.nome} comprou este ${CATEGORIA_LABEL[tile.categoria].toLowerCase()}.`,
+                delta: -tile.preco,
+                tom: "neutro",
+              });
+            } else {
+              addLog(`${jog.nome} dispensou ${tile.nome}.`);
+              await mostrar({
+                titulo: tile.nome,
+                texto: `${jog.nome} dispensou a compra.`,
+                tom: "neutro",
+              });
+            }
           } else {
             setCompra(idx);
             return;
@@ -86,28 +117,65 @@ export function Jogo() {
           addLog(
             `${jog.nome} pagou R$ ${tile.aluguel} de frete a ${donoJog.nome} em ${tile.nome}.`,
           );
+          await mostrar({
+            titulo: tile.nome,
+            texto: `${jog.nome} pagou frete a ${donoJog.nome}.`,
+            delta: -tile.aluguel,
+            tom: "ruim",
+          });
         } else {
           addLog(`${jog.nome} operou em ${tile.nome} (ativo próprio).`);
+          await mostrar({
+            titulo: tile.nome,
+            texto: `${jog.nome} está operando em ativo próprio.`,
+            tom: "neutro",
+          });
         }
       } else if (tile.kind === "taxa") {
         ajustar(jogadorId, -tile.valor);
         addLog(`${jog.nome} pagou ${tile.nome}: R$ ${tile.valor}.`);
+        await mostrar({
+          titulo: tile.nome,
+          texto: `${jog.nome} teve que pagar a cobrança.`,
+          delta: -tile.valor,
+          tom: "ruim",
+        });
       } else if (tile.kind === "bonus") {
         ajustar(jogadorId, tile.valor);
         addLog(`${jog.nome} recebeu ${tile.nome}: +R$ ${tile.valor}.`);
+        await mostrar({
+          titulo: tile.nome,
+          texto: `${jog.nome} recebeu um pagamento extra.`,
+          delta: tile.valor,
+          tom: "bom",
+        });
       } else if (tile.kind === "evento") {
         const ev = EVENTOS[Math.floor(Math.random() * EVENTOS.length)]!;
         ajustar(jogadorId, ev.delta);
-        addLog(
-          `${jog.nome} — ${ev.texto} (${ev.delta > 0 ? "+" : ""}R$ ${ev.delta})`,
-        );
+        addLog(`${jog.nome} — ${ev.texto} (${ev.delta > 0 ? "+" : ""}R$ ${ev.delta})`);
+        await mostrar({
+          titulo: "Boletim Logístico",
+          texto: ev.texto,
+          delta: ev.delta,
+          tom: ev.delta >= 0 ? "bom" : "ruim",
+        });
       } else if (tile.kind === "parada") {
         addLog(`${jog.nome} parou em ${tile.nome}. Nada acontece.`);
+        await mostrar({
+          titulo: tile.nome,
+          texto: `${jog.nome} perdeu tempo aqui, mas nada foi cobrado.`,
+          tom: "neutro",
+        });
       } else {
         addLog(`${jog.nome} chegou ao ${tile.nome}.`);
+        await mostrar({
+          titulo: tile.nome,
+          texto: `${jog.nome} chegou ao hub.`,
+          tom: "neutro",
+        });
       }
     },
-    [addLog, ajustar, comprar],
+    [addLog, ajustar, comprar, mostrar],
   );
 
   const proximoTurno = useCallback(() => {
@@ -208,12 +276,40 @@ export function Jogo() {
             mercado e construa o maior patrimônio logístico do país.
           </p>
         </header>
-        <Board
-          jogadores={jogadores}
-          donos={donos}
-          atual={atual}
-          destaque={jogadorDaVez.posicao}
-        />
+        <div className="relative">
+          <Board
+            jogadores={jogadores}
+            donos={donos}
+            atual={atual}
+            destaque={jogadorDaVez.posicao}
+          />
+          {aviso && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
+              <div className="animate-pop w-full max-w-sm rounded-2xl border border-primary/40 bg-popover p-5 text-center shadow-elev backdrop-blur">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-accent">
+                  Casa
+                </p>
+                <p className="font-display mt-1 text-xl font-bold text-foreground">
+                  {aviso.titulo}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{aviso.texto}</p>
+                {aviso.delta !== undefined && (
+                  <p
+                    className={`font-display mt-3 text-2xl font-bold ${
+                      aviso.tom === "ruim"
+                        ? "text-destructive"
+                        : aviso.tom === "bom"
+                          ? "text-success"
+                          : "text-primary"
+                    }`}
+                  >
+                    {aviso.delta > 0 ? "+" : "−"}R$ {Math.abs(aviso.delta)}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <aside className="space-y-4">
