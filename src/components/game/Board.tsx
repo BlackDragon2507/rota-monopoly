@@ -19,7 +19,7 @@ const catIcon: Record<string, typeof Truck> = {
 
 function TileIcon({ tile }: { tile: Tile }) {
   if (tile.kind === "prop") {
-    const Icon = catIcon[tile.categoria];
+    const Icon = catIcon[tile.categoria] ?? Package;
     return <Icon className="size-3.5 md:size-4" strokeWidth={2.2} />;
   }
   if (tile.kind === "evento") return <HelpCircle className="size-4" />;
