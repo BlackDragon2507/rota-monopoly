@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { Dices, RotateCcw, Trophy } from "lucide-react";
 
-const SALDO_INICIAL = 1500;
-const SALARIO = 200;
+const SALDO_INICIAL = 150000;
+const SALARIO = 20000;
 
 const novosJogadores = (): Jogador[] => [
   { id: 0, nome: "Você", cor: CORES[0]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: false, falido: false },
