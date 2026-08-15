@@ -294,6 +294,9 @@ export function Jogo() {
     setLog(["Nova partida iniciada. Boa sorte!"]);
     setCompra(null);
     setFim(false);
+    setPassos(null);
+    setAndados(0);
+    setDados([1, 1]);
   };
 
   const humano = jogadores[0]!;
