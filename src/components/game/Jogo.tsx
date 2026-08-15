@@ -72,7 +72,7 @@ export function Jogo() {
   const mostrar = useCallback(
     async (a: Aviso) => {
       setAviso(a);
-      await espera(2400);
+      await espera(4000);
       setAviso(null);
     },
     [],

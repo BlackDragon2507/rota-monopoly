@@ -81,9 +81,24 @@ export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props)
               </div>
               {donoJog && (
                 <span
-                  className="absolute right-1 top-1 size-2 rounded-full"
-                  style={{ background: donoJog.cor }}
-                />
+                  className="absolute right-1 top-1 flex items-center justify-center"
+                  title={`Dono: ${donoJog.nome}`}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="size-4 drop-shadow-sm md:size-5"
+                    style={{ color: donoJog.cor }}
+                    aria-label={`Casa de ${donoJog.nome}`}
+                  >
+                    <path
+                      d="M12 2L2 10h3v10h6v-6h4v6h6V10h3L12 2z"
+                      fill="currentColor"
+                      stroke="hsl(var(--background))"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
               )}
               <div className="flex items-end gap-0.5">
                 {aqui.map((j) => (
