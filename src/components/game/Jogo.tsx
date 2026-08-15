@@ -230,15 +230,16 @@ export function Jogo() {
   const rolar = useCallback(async () => {
     if (ref.current.jogadores.every((j) => j.falido)) return;
     setRolando(true);
+    setGirando(true);
     setAndados(0);
     setPassos(null);
     const d1 = 1 + Math.floor(Math.random() * 6);
     const d2 = 1 + Math.floor(Math.random() * 6);
     const total = d1 + d2;
-    await espera(500);
+    await espera(600);
     setDados([d1, d2]);
     setPassos(total);
-    setRolando(false);
+    setGirando(false);
     const jog = ref.current.jogadores[ref.current.atual]!;
     addLog(`${jog.nome} tirou ${d1} + ${d2} = ${total}.`);
     await espera(500);
