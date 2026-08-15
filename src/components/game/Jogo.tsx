@@ -230,16 +230,21 @@ export function Jogo() {
   const rolar = useCallback(async () => {
     if (ref.current.jogadores.every((j) => j.falido)) return;
     setRolando(true);
+    setAndados(0);
+    setPassos(null);
     const d1 = 1 + Math.floor(Math.random() * 6);
     const d2 = 1 + Math.floor(Math.random() * 6);
+    const total = d1 + d2;
+    await espera(500);
     setDados([d1, d2]);
-    const passos = d1 + d2;
+    setPassos(total);
+    setRolando(false);
     const jog = ref.current.jogadores[ref.current.atual]!;
-    addLog(`${jog.nome} tirou ${d1} + ${d2} = ${passos}.`);
-    await espera(400);
+    addLog(`${jog.nome} tirou ${d1} + ${d2} = ${total}.`);
+    await espera(500);
 
     let pos = jog.posicao;
-    for (let s = 0; s < passos; s++) {
+    for (let s = 0; s < total; s++) {
       pos = (pos + 1) % TABULEIRO.length;
       if (pos === 0) {
         ajustar(jog.id, SALARIO);
@@ -247,7 +252,8 @@ export function Jogo() {
       }
       const p = pos;
       setJogadores((js) => js.map((j) => (j.id === jog.id ? { ...j, posicao: p } : j)));
-      await espera(160);
+      setAndados(s + 1);
+      await espera(200);
     }
     await espera(250);
     await resolver(jog.id, pos);
