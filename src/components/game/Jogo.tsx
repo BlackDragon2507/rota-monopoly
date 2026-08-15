@@ -359,7 +359,7 @@ export function Jogo() {
         <Carteira jogador={humano} />
 
         <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-          <div className="flex items-center justify-between">
+          <div className="mb-3 flex items-center justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
                 Vez de
@@ -368,17 +368,25 @@ export function Jogo() {
                 {jogadorDaVez.nome}
               </p>
             </div>
-            <div className="flex gap-2">
-              {dados.map((d, i) => (
-                <span
-                  key={i}
-                  className={`flex size-11 items-center justify-center rounded-xl border border-primary/40 bg-secondary font-display text-xl font-bold text-primary ${rolando ? "animate-dice" : ""}`}
-                >
-                  {d}
-                </span>
-              ))}
-            </div>
+            <span className="rounded-full border border-border/60 px-3 py-1 text-[11px] text-muted-foreground">
+              {girando
+                ? "Rolando os dados…"
+                : rolando
+                  ? "Movendo o peão…"
+                  : minhaVez
+                    ? "Sua vez de rolar"
+                    : "Aguarde…"}
+            </span>
           </div>
+
+          <PainelDados
+            dados={dados}
+            rolando={girando}
+            passos={passos}
+            andados={andados}
+            casaNome={TABULEIRO[jogadorDaVez.posicao]?.nome ?? ""}
+          />
+
           <div className="mt-4 flex gap-2">
             <Button
               className="flex-1"
@@ -387,7 +395,7 @@ export function Jogo() {
                 void rolar();
               }}
             >
-              <Dices /> Rolar dados
+              <Dices /> {rolando ? "Rolando…" : "Rolar dados"}
             </Button>
             <Button variant="secondary" onClick={reiniciar} aria-label="Reiniciar partida">
               <RotateCcw />
