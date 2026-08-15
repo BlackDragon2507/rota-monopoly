@@ -34,6 +34,7 @@ export function Jogo() {
   const [atual, setAtual] = useState(0);
   const [dados, setDados] = useState<[number, number]>([1, 1]);
   const [rolando, setRolando] = useState(false);
+  const [girando, setGirando] = useState(false);
   const [passos, setPassos] = useState<number | null>(null);
   const [andados, setAndados] = useState(0);
   const [log, setLog] = useState<string[]>([
