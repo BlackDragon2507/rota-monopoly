@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "./Board";
 import { Carteira, Log, Ranking, patrimonio } from "./Painel";
+import { AvisoCard, type Aviso } from "./AvisoCard";
+import { PainelDados } from "./Dados";
 import { CATEGORIA_LABEL, EVENTOS, TABULEIRO } from "@/game/data";
 import { CORES, type Jogador } from "@/game/types";
 import { Button } from "@/components/ui/button";
@@ -26,19 +28,14 @@ const novosJogadores = (): Jogador[] => [
 
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-type Aviso = {
-  titulo: string;
-  texto: string;
-  delta?: number;
-  tom: "bom" | "ruim" | "neutro";
-};
-
 export function Jogo() {
   const [jogadores, setJogadores] = useState<Jogador[]>(novosJogadores);
   const [donos, setDonos] = useState<Record<number, number | undefined>>({});
   const [atual, setAtual] = useState(0);
   const [dados, setDados] = useState<[number, number]>([1, 1]);
   const [rolando, setRolando] = useState(false);
+  const [passos, setPassos] = useState<number | null>(null);
+  const [andados, setAndados] = useState(0);
   const [log, setLog] = useState<string[]>([
     "Bem-vindo ao RotaLog! Role os dados para expandir seu império logístico.",
   ]);
