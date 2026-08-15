@@ -84,6 +84,7 @@ export function Jogo() {
       if (!tile) return;
 
       if (tile.kind === "prop") {
+        const cat = CATEGORIA_LABEL[tile.categoria];
         const dono = ref.current.donos[idx];
         if (dono === undefined) {
           if (jog.cpu) {
@@ -91,16 +92,24 @@ export function Jogo() {
               comprar(idx, jogadorId);
               await mostrar({
                 titulo: tile.nome,
-                texto: `${jog.nome} comprou este ${CATEGORIA_LABEL[tile.categoria].toLowerCase()}.`,
+                subtitulo: `${cat} · Compra`,
+                texto: `${jog.nome} adquiriu este ativo e passa a cobrar frete de quem parar aqui.`,
+                detalhe: `Preço R$ ${tile.preco} · Frete cobrado R$ ${tile.aluguel}`,
                 delta: -tile.preco,
                 tom: "neutro",
+                icone: tile.categoria,
+                jogadorId,
               });
             } else {
               addLog(`${jog.nome} dispensou ${tile.nome}.`);
               await mostrar({
                 titulo: tile.nome,
-                texto: `${jog.nome} dispensou a compra.`,
+                subtitulo: `${cat} · Livre`,
+                texto: `${jog.nome} dispensou a compra por falta de caixa. O ativo continua disponível.`,
+                detalhe: `Preço R$ ${tile.preco} · Frete R$ ${tile.aluguel}`,
                 tom: "neutro",
+                icone: tile.categoria,
+                jogadorId,
               });
             }
           } else {
@@ -116,16 +125,24 @@ export function Jogo() {
           );
           await mostrar({
             titulo: tile.nome,
-            texto: `${jog.nome} pagou frete a ${donoJog.nome}.`,
+            subtitulo: `${cat} · Frete`,
+            texto: `Este ativo pertence a ${donoJog.nome}. ${jog.nome} precisou pagar o frete da operação.`,
+            detalhe: `Valor transferido para ${donoJog.nome}: R$ ${tile.aluguel}`,
             delta: -tile.aluguel,
             tom: "ruim",
+            icone: "frete",
+            jogadorId,
           });
         } else {
           addLog(`${jog.nome} operou em ${tile.nome} (ativo próprio).`);
           await mostrar({
             titulo: tile.nome,
-            texto: `${jog.nome} está operando em ativo próprio.`,
+            subtitulo: `${cat} · Ativo próprio`,
+            texto: `${jog.nome} opera em ativo próprio: nenhum frete é cobrado.`,
+            detalhe: `Frete cobrado dos concorrentes: R$ ${tile.aluguel}`,
             tom: "neutro",
+            icone: tile.categoria,
+            jogadorId,
           });
         }
       } else if (tile.kind === "taxa") {
@@ -133,18 +150,26 @@ export function Jogo() {
         addLog(`${jog.nome} pagou ${tile.nome}: R$ ${tile.valor}.`);
         await mostrar({
           titulo: tile.nome,
-          texto: `${jog.nome} teve que pagar a cobrança.`,
+          subtitulo: "Cobrança obrigatória",
+          texto: `${jog.nome} parou numa casa de cobrança e teve que pagar imediatamente.`,
+          detalhe: `Débito de R$ ${tile.valor} descontado do caixa.`,
           delta: -tile.valor,
           tom: "ruim",
+          icone: "taxa",
+          jogadorId,
         });
       } else if (tile.kind === "bonus") {
         ajustar(jogadorId, tile.valor);
         addLog(`${jog.nome} recebeu ${tile.nome}: +R$ ${tile.valor}.`);
         await mostrar({
           titulo: tile.nome,
-          texto: `${jog.nome} recebeu um pagamento extra.`,
+          subtitulo: "Receita extra",
+          texto: `${jog.nome} fechou uma operação lucrativa e recebeu um pagamento extra.`,
+          detalhe: `Crédito de R$ ${tile.valor} no caixa.`,
           delta: tile.valor,
           tom: "bom",
+          icone: "bonus",
+          jogadorId,
         });
       } else if (tile.kind === "evento") {
         const ev = EVENTOS[Math.floor(Math.random() * EVENTOS.length)]!;
@@ -152,23 +177,36 @@ export function Jogo() {
         addLog(`${jog.nome} — ${ev.texto} (${ev.delta > 0 ? "+" : ""}R$ ${ev.delta})`);
         await mostrar({
           titulo: "Boletim Logístico",
+          subtitulo: ev.delta >= 0 ? "Evento favorável" : "Evento adverso",
           texto: ev.texto,
+          detalhe:
+            ev.delta >= 0
+              ? `Impacto positivo de R$ ${ev.delta} no caixa de ${jog.nome}.`
+              : `Impacto negativo de R$ ${Math.abs(ev.delta)} no caixa de ${jog.nome}.`,
           delta: ev.delta,
           tom: ev.delta >= 0 ? "bom" : "ruim",
+          icone: "evento",
+          jogadorId,
         });
       } else if (tile.kind === "parada") {
         addLog(`${jog.nome} parou em ${tile.nome}. Nada acontece.`);
         await mostrar({
           titulo: tile.nome,
-          texto: `${jog.nome} perdeu tempo aqui, mas nada foi cobrado.`,
+          subtitulo: "Parada técnica",
+          texto: `${jog.nome} perdeu tempo aqui, mas nenhum valor foi cobrado.`,
           tom: "neutro",
+          icone: "parada",
+          jogadorId,
         });
       } else {
         addLog(`${jog.nome} chegou ao ${tile.nome}.`);
         await mostrar({
           titulo: tile.nome,
-          texto: `${jog.nome} chegou ao hub.`,
+          subtitulo: "Hub logístico",
+          texto: `${jog.nome} chegou ao hub. Ao completar a volta, recebe R$ ${SALARIO}.`,
           tom: "neutro",
+          icone: "inicio",
+          jogadorId,
         });
       }
     },
