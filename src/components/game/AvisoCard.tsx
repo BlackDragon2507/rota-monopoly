@@ -100,7 +100,7 @@ export function AvisoCard({ aviso, jogadores }: { aviso: Aviso; jogadores: Jogad
           <div className="flex items-end justify-between rounded-xl border border-border/60 bg-background/60 px-3 py-2">
             <div>
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                {aviso.delta >= 0 ? "Você recebeu" : "Você pagou"}
+                {aviso.delta >= 0 ? "Recebeu" : "Pagou"}
               </p>
               <p className={cn("font-display flex items-center gap-1 text-2xl font-bold", tomTexto)}>
                 {aviso.delta >= 0 ? (
