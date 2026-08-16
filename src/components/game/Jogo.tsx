@@ -290,11 +290,27 @@ export function Jogo() {
   // Fim de jogo
   useEffect(() => {
     const vivos = jogadores.filter((j) => !j.falido && j.dinheiro >= 0);
-    if (vivos.length <= 1 && !fim) setFim(true);
     const todasVendidas = TABULEIRO.every(
       (t, i) => t.kind !== "prop" || donos[i] !== undefined,
     );
-    if (todasVendidas && !fim) setFim(true);
+    const limiteRodadas = jogadores.every((j) => j.falido || j.rodadas >= 30);
+    if ((vivos.length <= 1 || todasVendidas || limiteRodadas) && !fim) {
+      setJogadores((js) => {
+        const porDinheiro = [...js].sort((a, b) => b.dinheiro - a.dinheiro);
+        const porAtivos = [...js].sort((a, b) => {
+          const ativosA = TABULEIRO.filter((t, i) => t.kind === "prop" && donos[i] === a.id).length;
+          const ativosB = TABULEIRO.filter((t, i) => t.kind === "prop" && donos[i] === b.id).length;
+          return ativosB - ativosA;
+        });
+        const pontosDinheiro = new Map(porDinheiro.map((j, i) => [j.id, 3 - i]));
+        const pontosAtivos = new Map(porAtivos.map((j, i) => [j.id, 3 - i]));
+        return js.map((j) => ({
+          ...j,
+          pontos: Math.max(0, pontosDinheiro.get(j.id) ?? 0) + Math.max(0, pontosAtivos.get(j.id) ?? 0),
+        }));
+      });
+      setFim(true);
+    }
   }, [jogadores, donos, fim]);
 
   const reiniciar = () => {
