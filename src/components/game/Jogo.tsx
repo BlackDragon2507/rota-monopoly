@@ -478,15 +478,14 @@ export function Jogo() {
       </Dialog>
 
       <Dialog open={fim} onOpenChange={() => {}}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display">Fim de jogo</DialogTitle>
             <DialogDescription>
-              {vencedor.nome} venceu com patrimônio de R${" "}
-              {patrimonio(vencedor, donos).toLocaleString("pt-BR")}.
+              Limite de 30 rodadas atingido. Veja como a pontuação foi calculada.
             </DialogDescription>
           </DialogHeader>
-          <Ranking jogadores={jogadores} donos={donos} atual={atual} />
+          <PlacarFinal jogadores={jogadores} donos={donos} />
           <DialogFooter>
             <Button onClick={reiniciar}>Jogar novamente</Button>
           </DialogFooter>
