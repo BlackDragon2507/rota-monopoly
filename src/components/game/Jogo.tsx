@@ -3,6 +3,7 @@ import { Board } from "./Board";
 import { Carteira, Log, Ranking, patrimonio } from "./Painel";
 import { AvisoCard, type Aviso } from "./AvisoCard";
 import { PainelDados } from "./Dados";
+import { PlacarFinal } from "./PlacarFinal";
 import { CATEGORIA_LABEL, EVENTOS, TABULEIRO } from "@/game/data";
 import { CORES, type Jogador } from "@/game/types";
 import { Button } from "@/components/ui/button";
