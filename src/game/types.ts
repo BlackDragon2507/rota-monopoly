@@ -6,6 +6,8 @@ export type Jogador = {
   posicao: number;
   cpu: boolean;
   falido: boolean;
+  pontos: number;
+  rodadas: number;
 };
 
 export const CORES = [

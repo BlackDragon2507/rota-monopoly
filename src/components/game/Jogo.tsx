@@ -3,6 +3,7 @@ import { Board } from "./Board";
 import { Carteira, Log, Ranking, patrimonio } from "./Painel";
 import { AvisoCard, type Aviso } from "./AvisoCard";
 import { PainelDados } from "./Dados";
+import { PlacarFinal } from "./PlacarFinal";
 import { CATEGORIA_LABEL, EVENTOS, TABULEIRO } from "@/game/data";
 import { CORES, type Jogador } from "@/game/types";
 import { Button } from "@/components/ui/button";
@@ -20,10 +21,10 @@ const SALDO_INICIAL = 150000;
 const SALARIO = 20000;
 
 const novosJogadores = (): Jogador[] => [
-  { id: 0, nome: "Você", cor: CORES[0]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: false, falido: false },
-  { id: 1, nome: "TransBrasil", cor: CORES[1]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: true, falido: false },
-  { id: 2, nome: "NavePort", cor: CORES[2]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: true, falido: false },
-  { id: 3, nome: "RailMax", cor: CORES[3]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: true, falido: false },
+  { id: 0, nome: "Você", cor: CORES[0]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: false, falido: false, pontos: 0, rodadas: 0 },
+  { id: 1, nome: "TransBrasil", cor: CORES[1]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: true, falido: false, pontos: 0, rodadas: 0 },
+  { id: 2, nome: "NavePort", cor: CORES[2]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: true, falido: false, pontos: 0, rodadas: 0 },
+  { id: 3, nome: "RailMax", cor: CORES[3]!, dinheiro: SALDO_INICIAL, posicao: 0, cpu: true, falido: false, pontos: 0, rodadas: 0 },
 ];
 
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -215,7 +216,17 @@ export function Jogo() {
   );
 
   const proximoTurno = useCallback(() => {
-    setJogadores((js) => js.map((j) => (j.dinheiro < 0 ? { ...j, falido: true } : j)));
+    setJogadores((js) =>
+      js.map((j) => {
+        const falido = j.dinheiro < 0;
+        const atualJogando = j.id === ref.current.atual;
+        return {
+          ...j,
+          falido: falido || j.falido,
+          rodadas: atualJogando && !falido ? j.rodadas + 1 : j.rodadas,
+        };
+      }),
+    );
     setAtual((a) => {
       const js = ref.current.jogadores;
       let n = a;
@@ -280,11 +291,27 @@ export function Jogo() {
   // Fim de jogo
   useEffect(() => {
     const vivos = jogadores.filter((j) => !j.falido && j.dinheiro >= 0);
-    if (vivos.length <= 1 && !fim) setFim(true);
     const todasVendidas = TABULEIRO.every(
       (t, i) => t.kind !== "prop" || donos[i] !== undefined,
     );
-    if (todasVendidas && !fim) setFim(true);
+    const limiteRodadas = jogadores.every((j) => j.falido || j.rodadas >= 30);
+    if ((vivos.length <= 1 || todasVendidas || limiteRodadas) && !fim) {
+      setJogadores((js) => {
+        const porDinheiro = [...js].sort((a, b) => b.dinheiro - a.dinheiro);
+        const porAtivos = [...js].sort((a, b) => {
+          const ativosA = TABULEIRO.filter((t, i) => t.kind === "prop" && donos[i] === a.id).length;
+          const ativosB = TABULEIRO.filter((t, i) => t.kind === "prop" && donos[i] === b.id).length;
+          return ativosB - ativosA;
+        });
+        const pontosDinheiro = new Map(porDinheiro.map((j, i) => [j.id, 3 - i]));
+        const pontosAtivos = new Map(porAtivos.map((j, i) => [j.id, 3 - i]));
+        return js.map((j) => ({
+          ...j,
+          pontos: Math.max(0, pontosDinheiro.get(j.id) ?? 0) + Math.max(0, pontosAtivos.get(j.id) ?? 0),
+        }));
+      });
+      setFim(true);
+    }
   }, [jogadores, donos, fim]);
 
   const reiniciar = () => {
@@ -364,6 +391,38 @@ export function Jogo() {
               Encerrar turno
             </Button>
           )}
+
+          <div className="mt-4 rounded-xl border border-border/60 bg-background/50 p-3">
+            <p className="mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+              Rodadas restantes
+            </p>
+            <div className="space-y-1.5">
+              {jogadores.map((j) => {
+                const restantes = Math.max(0, 30 - j.rodadas);
+                const pct = (j.rodadas / 30) * 100;
+                return (
+                  <div key={j.id} className="flex items-center gap-2">
+                    <span
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ background: j.cor }}
+                    />
+                    <span className="min-w-0 flex-1 truncate text-xs text-foreground/90">
+                      {j.nome}
+                    </span>
+                    <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="w-8 text-right text-[10px] text-muted-foreground">
+                      {restantes}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -451,15 +510,14 @@ export function Jogo() {
       </Dialog>
 
       <Dialog open={fim} onOpenChange={() => {}}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display">Fim de jogo</DialogTitle>
             <DialogDescription>
-              {vencedor.nome} venceu com patrimônio de R${" "}
-              {patrimonio(vencedor, donos).toLocaleString("pt-BR")}.
+              Limite de 30 rodadas atingido. Veja como a pontuação foi calculada.
             </DialogDescription>
           </DialogHeader>
-          <Ranking jogadores={jogadores} donos={donos} atual={atual} />
+          <PlacarFinal jogadores={jogadores} donos={donos} />
           <DialogFooter>
             <Button onClick={reiniciar}>Jogar novamente</Button>
           </DialogFooter>
