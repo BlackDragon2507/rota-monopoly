@@ -308,36 +308,8 @@ export function Jogo() {
   )[0]!;
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[1fr_360px]">
-      <div className="space-y-4">
-        <header>
-          <p className="text-xs uppercase tracking-[0.35em] text-accent">
-            Jogo de tabuleiro
-          </p>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-            RotaLog — Império da Logística
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Compre armazéns, caminhões, portos e ferrovias, sobreviva aos eventos do
-            mercado e construa o maior patrimônio logístico do país.
-          </p>
-        </header>
-        <div className="relative">
-          <Board
-            jogadores={jogadores}
-            donos={donos}
-            atual={atual}
-            destaque={jogadorDaVez.posicao}
-          />
-          {aviso && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
-              <AvisoCard aviso={aviso} jogadores={jogadores} />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <aside className="space-y-4">
+    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:grid lg:grid-cols-[1fr_360px]">
+      <aside className="order-1 space-y-4 lg:order-2">
         <Carteira jogador={humano} />
 
         <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
@@ -394,20 +366,50 @@ export function Jogo() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-          <h2 className="mb-3 flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            <Trophy className="size-4 text-primary" /> Ranking
-          </h2>
-          <Ranking jogadores={jogadores} donos={donos} atual={atual} />
-        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
+            <h2 className="mb-3 flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
+              <Trophy className="size-4 text-primary" /> Ranking
+            </h2>
+            <Ranking jogadores={jogadores} donos={donos} atual={atual} />
+          </div>
 
-        <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-          <h2 className="mb-3 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            Histórico
-          </h2>
-          <Log itens={log} />
+          <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
+            <h2 className="mb-3 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
+              Histórico
+            </h2>
+            <Log itens={log} />
+          </div>
         </div>
       </aside>
+
+      <div className="order-2 space-y-4 lg:order-1">
+        <header>
+          <p className="text-xs uppercase tracking-[0.35em] text-accent">
+            Jogo de tabuleiro
+          </p>
+          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            RotaLog — Império da Logística
+          </h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            Compre armazéns, caminhões, portos e ferrovias, sobreviva aos eventos do
+            mercado e construa o maior patrimônio logístico do país.
+          </p>
+        </header>
+        <div className="relative mx-auto w-full max-w-[min(100%,760px)]">
+          <Board
+            jogadores={jogadores}
+            donos={donos}
+            atual={atual}
+            destaque={jogadorDaVez.posicao}
+          />
+          {aviso && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
+              <AvisoCard aviso={aviso} jogadores={jogadores} />
+            </div>
+          )}
+        </div>
+      </div>
 
       <Dialog open={compra !== null} onOpenChange={() => {}}>
         <DialogContent>
