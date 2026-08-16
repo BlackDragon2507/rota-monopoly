@@ -215,7 +215,17 @@ export function Jogo() {
   );
 
   const proximoTurno = useCallback(() => {
-    setJogadores((js) => js.map((j) => (j.dinheiro < 0 ? { ...j, falido: true } : j)));
+    setJogadores((js) =>
+      js.map((j) => {
+        const falido = j.dinheiro < 0;
+        const atualJogando = j.id === ref.current.atual;
+        return {
+          ...j,
+          falido: falido || j.falido,
+          rodadas: atualJogando && !falido ? j.rodadas + 1 : j.rodadas,
+        };
+      }),
+    );
     setAtual((a) => {
       const js = ref.current.jogadores;
       let n = a;
