@@ -391,6 +391,38 @@ export function Jogo() {
               Encerrar turno
             </Button>
           )}
+
+          <div className="mt-4 rounded-xl border border-border/60 bg-background/50 p-3">
+            <p className="mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+              Rodadas restantes
+            </p>
+            <div className="space-y-1.5">
+              {jogadores.map((j) => {
+                const restantes = Math.max(0, 30 - j.rodadas);
+                const pct = (j.rodadas / 30) * 100;
+                return (
+                  <div key={j.id} className="flex items-center gap-2">
+                    <span
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ background: j.cor }}
+                    />
+                    <span className="min-w-0 flex-1 truncate text-xs text-foreground/90">
+                      {j.nome}
+                    </span>
+                    <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="w-8 text-right text-[10px] text-muted-foreground">
+                      {restantes}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
