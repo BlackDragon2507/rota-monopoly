@@ -270,8 +270,12 @@ export function Jogo() {
     }
     await espera(250);
     await resolver(jog.id, pos);
+    if (ref.current.compra === null) {
+      await espera(400);
+      proximoTurno();
+    }
     setRolando(false);
-  }, [addLog, ajustar, resolver]);
+  }, [addLog, ajustar, proximoTurno, resolver]);
 
   // Turno automático da CPU
   useEffect(() => {
