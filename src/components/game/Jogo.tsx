@@ -45,8 +45,8 @@ export function Jogo() {
   const [aviso, setAviso] = useState<Aviso | null>(null);
   const [fim, setFim] = useState(false);
 
-  const ref = useRef({ jogadores, donos, atual });
-  ref.current = { jogadores, donos, atual };
+  const ref = useRef({ jogadores, donos, atual, compra });
+  ref.current = { jogadores, donos, atual, compra };
 
   const addLog = useCallback((t: string) => {
     setLog((l) => [t, ...l].slice(0, 40));
@@ -270,8 +270,12 @@ export function Jogo() {
     }
     await espera(250);
     await resolver(jog.id, pos);
+    if (ref.current.compra === null) {
+      await espera(400);
+      proximoTurno();
+    }
     setRolando(false);
-  }, [addLog, ajustar, resolver]);
+  }, [addLog, ajustar, proximoTurno, resolver]);
 
   // Turno automático da CPU
   useEffect(() => {
@@ -379,15 +383,6 @@ export function Jogo() {
               <RotateCcw />
             </Button>
           </div>
-          {!rolando && !jogadorDaVez.cpu && !fim && compra === null && (
-            <Button
-              variant="ghost"
-              className="mt-2 w-full text-muted-foreground"
-              onClick={proximoTurno}
-            >
-              Encerrar turno
-            </Button>
-          )}
 
           <div className="mt-4 rounded-xl border border-border/60 bg-background/50 p-3">
             <p className="mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">
