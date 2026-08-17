@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "./Board";
-import { Carteira, Log, Ranking, patrimonio } from "./Painel";
+import { Carteira, Log, Ranking } from "./Painel";
 import { AvisoCard, type Aviso } from "./AvisoCard";
 import { PainelDados } from "./Dados";
 import { PlacarFinal } from "./PlacarFinal";
@@ -330,9 +330,6 @@ export function Jogo() {
   const jogadorDaVez = jogadores[atual]!;
   const minhaVez = !jogadorDaVez.cpu && !rolando && compra === null && !fim;
   const tileCompra = compra !== null ? TABULEIRO[compra] : null;
-  const vencedor = [...jogadores].sort(
-    (a, b) => patrimonio(b, donos) - patrimonio(a, donos),
-  )[0]!;
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:grid lg:grid-cols-[1fr_360px]">
