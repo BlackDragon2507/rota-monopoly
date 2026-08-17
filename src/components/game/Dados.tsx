@@ -40,14 +40,14 @@ export function Dado({ valor, rolando }: { valor: number; rolando: boolean }) {
       role="img"
       aria-label={`Dado com ${valor}`}
       className={cn(
-        "relative size-12 rounded-xl border border-primary/40 bg-secondary shadow-elev",
+        "relative size-16 rounded-2xl border-2 border-primary/40 bg-secondary shadow-elev",
         rolando && "animate-dice",
       )}
     >
       {(PIPS[valor] ?? []).map(([x, y], i) => (
         <span
           key={i}
-          className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
+          className="absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
           style={{ left: `${x}%`, top: `${y}%` }}
         />
       ))}
