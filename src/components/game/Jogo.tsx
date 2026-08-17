@@ -341,79 +341,34 @@ export function Jogo() {
         <Carteira jogador={humano} />
 
         <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                Vez de
-              </p>
-              <p className="font-display text-lg font-bold" style={{ color: jogadorDaVez.cor }}>
-                {jogadorDaVez.nome}
-              </p>
-            </div>
-            <span className="rounded-full border border-border/60 px-3 py-1 text-[11px] text-muted-foreground">
-              {girando
-                ? "Rolando os dados…"
-                : rolando
-                  ? "Movendo o peão…"
-                  : minhaVez
-                    ? "Sua vez de rolar"
-                    : "Aguarde…"}
-            </span>
-          </div>
-
-          <PainelDados
-            dados={dados}
-            rolando={girando}
-            passos={passos}
-            andados={andados}
-            casaNome={TABULEIRO[jogadorDaVez.posicao]?.nome ?? ""}
-          />
-
-          <div className="mt-4 flex gap-2">
-            <Button
-              className="flex-1"
-              disabled={!minhaVez}
-              onClick={() => {
-                void rolar();
-              }}
-            >
-              <Dices /> {rolando ? "Rolando…" : "Rolar dados"}
-            </Button>
-            <Button variant="secondary" onClick={reiniciar} aria-label="Reiniciar partida">
-              <RotateCcw />
-            </Button>
-          </div>
-
-          <div className="mt-4 rounded-xl border border-border/60 bg-background/50 p-3">
-            <p className="mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">
-              Rodadas restantes
-            </p>
-            <div className="space-y-1.5">
-              {jogadores.map((j) => {
-                const restantes = Math.max(0, 30 - j.rodadas);
-                const pct = (j.rodadas / 30) * 100;
-                return (
-                  <div key={j.id} className="flex items-center gap-2">
-                    <span
-                      className="size-2.5 shrink-0 rounded-full"
-                      style={{ background: j.cor }}
+          <p className="mb-3 text-[10px] uppercase tracking-widest text-muted-foreground">
+            Rodadas restantes
+          </p>
+          <div className="space-y-1.5">
+            {jogadores.map((j) => {
+              const restantes = Math.max(0, 30 - j.rodadas);
+              const pct = (j.rodadas / 30) * 100;
+              return (
+                <div key={j.id} className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ background: j.cor }}
+                  />
+                  <span className="min-w-0 flex-1 truncate text-xs text-foreground/90">
+                    {j.nome}
+                  </span>
+                  <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${pct}%` }}
                     />
-                    <span className="min-w-0 flex-1 truncate text-xs text-foreground/90">
-                      {j.nome}
-                    </span>
-                    <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
-                      <div
-                        className="h-full rounded-full bg-primary transition-all"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <span className="w-8 text-right text-[10px] text-muted-foreground">
-                      {restantes}
-                    </span>
                   </div>
-                );
-              })}
-            </div>
+                  <span className="w-8 text-right text-[10px] text-muted-foreground">
+                    {restantes}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -459,6 +414,53 @@ export function Jogo() {
               <AvisoCard aviso={aviso} jogadores={jogadores} />
             </div>
           )}
+        </div>
+
+        <div className="mx-auto w-full max-w-[min(100%,760px)]">
+          <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Vez de
+                </p>
+                <p className="font-display text-lg font-bold" style={{ color: jogadorDaVez.cor }}>
+                  {jogadorDaVez.nome}
+                </p>
+              </div>
+              <span className="rounded-full border border-border/60 px-3 py-1 text-[11px] text-muted-foreground">
+                {girando
+                  ? "Rolando os dados…"
+                  : rolando
+                    ? "Movendo o peão…"
+                    : minhaVez
+                      ? "Sua vez de rolar"
+                      : "Aguarde…"}
+              </span>
+            </div>
+
+            <PainelDados
+              dados={dados}
+              rolando={girando}
+              passos={passos}
+              andados={andados}
+              casaNome={TABULEIRO[jogadorDaVez.posicao]?.nome ?? ""}
+            />
+
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <Button
+                className="h-12 gap-2 px-8 text-base"
+                disabled={!minhaVez}
+                onClick={() => {
+                  void rolar();
+                }}
+              >
+                <Dices className="size-5" /> {rolando ? "Rolando…" : "Rolar dados"}
+              </Button>
+              <Button variant="secondary" className="h-12 px-4" onClick={reiniciar} aria-label="Reiniciar partida">
+                <RotateCcw className="size-5" />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
