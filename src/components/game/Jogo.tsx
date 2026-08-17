@@ -45,8 +45,8 @@ export function Jogo() {
   const [aviso, setAviso] = useState<Aviso | null>(null);
   const [fim, setFim] = useState(false);
 
-  const ref = useRef({ jogadores, donos, atual });
-  ref.current = { jogadores, donos, atual };
+  const ref = useRef({ jogadores, donos, atual, compra });
+  ref.current = { jogadores, donos, atual, compra };
 
   const addLog = useCallback((t: string) => {
     setLog((l) => [t, ...l].slice(0, 40));
