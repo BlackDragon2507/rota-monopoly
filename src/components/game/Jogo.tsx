@@ -383,15 +383,6 @@ export function Jogo() {
               <RotateCcw />
             </Button>
           </div>
-          {!rolando && !jogadorDaVez.cpu && !fim && compra === null && (
-            <Button
-              variant="ghost"
-              className="mt-2 w-full text-muted-foreground"
-              onClick={proximoTurno}
-            >
-              Encerrar turno
-            </Button>
-          )}
 
           <div className="mt-4 rounded-xl border border-border/60 bg-background/50 p-3">
             <p className="mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">
