@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Dices, RotateCcw, Trophy } from "lucide-react";
+import { Dices, RotateCcw } from "lucide-react";
 
 const SALDO_INICIAL = 150000;
 const SALARIO = 20000;
@@ -372,20 +372,11 @@ export function Jogo() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-          <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-            <h2 className="mb-3 flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
-              <Trophy className="size-4 text-primary" /> Ranking
-            </h2>
-            <Ranking jogadores={jogadores} donos={donos} atual={atual} />
-          </div>
-
-          <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-            <h2 className="mb-3 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
-              Histórico
-            </h2>
-            <Log itens={log} />
-          </div>
+        <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
+          <h2 className="mb-3 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
+            Histórico
+          </h2>
+          <Log itens={log} />
         </div>
       </aside>
 
