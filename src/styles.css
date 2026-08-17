@@ -161,7 +161,7 @@
 }
 
 .animate-dice {
-  animation: dice-roll 0.45s ease-in-out;
+  animation: dice-roll 0.45s ease-in-out infinite;
 }
 
 @keyframes pop-in {
