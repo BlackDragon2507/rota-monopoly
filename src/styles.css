@@ -150,18 +150,24 @@
 
 @keyframes dice-roll {
   0% {
-    transform: rotate(0deg) scale(1);
+    transform: rotate(0deg) scale(1) translateY(0);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1) translateY(-6px);
   }
   50% {
-    transform: rotate(180deg) scale(1.15);
+    transform: rotate(180deg) scale(1) translateY(0);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1) translateY(-6px);
   }
   100% {
-    transform: rotate(360deg) scale(1);
+    transform: rotate(360deg) scale(1) translateY(0);
   }
 }
 
 .animate-dice {
-  animation: dice-roll 0.45s ease-in-out infinite;
+  animation: dice-roll 0.5s ease-in-out infinite;
 }
 
 @keyframes pop-in {
