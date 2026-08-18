@@ -45,9 +45,6 @@ export function Jogo() {
   const ref = useRef({ jogadores, donos, atual, compra });
   ref.current = { jogadores, donos, atual, compra };
 
-  const addLog = useCallback((t: string) => {
-    setLog((l) => [t, ...l].slice(0, 40));
-  }, []);
 
   const ajustar = useCallback((id: number, delta: number) => {
     setJogadores((js) =>
