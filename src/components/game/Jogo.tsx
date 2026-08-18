@@ -59,9 +59,8 @@ export function Jogo() {
       ajustar(id, -tile.preco);
       setDonos((d) => ({ ...d, [idx]: id }));
       const nome = ref.current.jogadores.find((j) => j.id === id)?.nome;
-      addLog(`${nome} comprou ${tile.nome} por R$ ${tile.preco}.`);
     },
-    [addLog, ajustar],
+    [ajustar],
   );
 
   const mostrar = useCallback(
@@ -97,7 +96,6 @@ export function Jogo() {
                 jogadorId,
               });
             } else {
-              addLog(`${jog.nome} dispensou ${tile.nome}.`);
               await mostrar({
                 titulo: tile.nome,
                 subtitulo: `${cat} · Livre`,
@@ -116,7 +114,6 @@ export function Jogo() {
           const donoJog = ref.current.jogadores.find((j) => j.id === dono)!;
           ajustar(jogadorId, -tile.aluguel);
           ajustar(dono, tile.aluguel);
-          addLog(
             `${jog.nome} pagou R$ ${tile.aluguel} de frete a ${donoJog.nome} em ${tile.nome}.`,
           );
           await mostrar({
@@ -130,7 +127,6 @@ export function Jogo() {
             jogadorId,
           });
         } else {
-          addLog(`${jog.nome} operou em ${tile.nome} (ativo próprio).`);
           await mostrar({
             titulo: tile.nome,
             subtitulo: `${cat} · Ativo próprio`,
@@ -143,7 +139,6 @@ export function Jogo() {
         }
       } else if (tile.kind === "taxa") {
         ajustar(jogadorId, -tile.valor);
-        addLog(`${jog.nome} pagou ${tile.nome}: R$ ${tile.valor}.`);
         await mostrar({
           titulo: tile.nome,
           subtitulo: "Cobrança obrigatória",
@@ -156,7 +151,6 @@ export function Jogo() {
         });
       } else if (tile.kind === "bonus") {
         ajustar(jogadorId, tile.valor);
-        addLog(`${jog.nome} recebeu ${tile.nome}: +R$ ${tile.valor}.`);
         await mostrar({
           titulo: tile.nome,
           subtitulo: "Receita extra",
@@ -170,7 +164,6 @@ export function Jogo() {
       } else if (tile.kind === "evento") {
         const ev = EVENTOS[Math.floor(Math.random() * EVENTOS.length)]!;
         ajustar(jogadorId, ev.delta);
-        addLog(`${jog.nome} — ${ev.texto} (${ev.delta > 0 ? "+" : ""}R$ ${ev.delta})`);
         await mostrar({
           titulo: "Boletim Logístico",
           subtitulo: ev.delta >= 0 ? "Evento favorável" : "Evento adverso",
@@ -185,7 +178,6 @@ export function Jogo() {
           jogadorId,
         });
       } else if (tile.kind === "parada") {
-        addLog(`${jog.nome} parou em ${tile.nome}. Nada acontece.`);
         await mostrar({
           titulo: tile.nome,
           subtitulo: "Parada técnica",
@@ -195,7 +187,6 @@ export function Jogo() {
           jogadorId,
         });
       } else {
-        addLog(`${jog.nome} chegou ao ${tile.nome}.`);
         await mostrar({
           titulo: tile.nome,
           subtitulo: "Hub logístico",
@@ -206,7 +197,7 @@ export function Jogo() {
         });
       }
     },
-    [addLog, ajustar, comprar, mostrar],
+    [ajustar, comprar, mostrar],
   );
 
   const proximoTurno = useCallback(() => {
@@ -247,7 +238,6 @@ export function Jogo() {
     setPassos(total);
     setGirando(false);
     const jog = ref.current.jogadores[ref.current.atual]!;
-    addLog(`${jog.nome} tirou ${d1} + ${d2} = ${total}.`);
     await espera(500);
 
     let pos = jog.posicao;
@@ -255,7 +245,6 @@ export function Jogo() {
       pos = (pos + 1) % TABULEIRO.length;
       if (pos === 0) {
         ajustar(jog.id, SALARIO);
-        addLog(`${jog.nome} passou pelo Centro de Distribuição: +R$ ${SALARIO}.`);
       }
       const p = pos;
       setJogadores((js) => js.map((j) => (j.id === jog.id ? { ...j, posicao: p } : j)));
@@ -269,7 +258,7 @@ export function Jogo() {
       proximoTurno();
     }
     setRolando(false);
-  }, [addLog, ajustar, proximoTurno, resolver]);
+  }, [ajustar, proximoTurno, resolver]);
 
   // Turno automático da CPU
   useEffect(() => {
@@ -316,7 +305,6 @@ export function Jogo() {
     setJogadores(novosJogadores());
     setDonos({});
     setAtual(0);
-    setLog(["Nova partida iniciada. Boa sorte!"]);
     setCompra(null);
     setFim(false);
     setPassos(null);
@@ -464,7 +452,6 @@ export function Jogo() {
                   variant="secondary"
                   onClick={() => {
                     setCompra(null);
-                    addLog(`Você dispensou ${tileCompra.nome}.`);
                     proximoTurno();
                   }}
                 >
