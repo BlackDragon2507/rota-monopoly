@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "./Board";
-import { Carteira, Log } from "./Painel";
+import { Carteira } from "./Painel";
 import { AvisoCard, type Aviso } from "./AvisoCard";
 import { PainelDados } from "./Dados";
 import { PlacarFinal } from "./PlacarFinal";
@@ -38,9 +38,6 @@ export function Jogo() {
   const [girando, setGirando] = useState(false);
   const [passos, setPassos] = useState<number | null>(null);
   const [andados, setAndados] = useState(0);
-  const [log, setLog] = useState<string[]>([
-    "Bem-vindo ao RotaLog! Role os dados para expandir seu império logístico.",
-  ]);
   const [compra, setCompra] = useState<number | null>(null);
   const [aviso, setAviso] = useState<Aviso | null>(null);
   const [fim, setFim] = useState(false);
@@ -48,9 +45,6 @@ export function Jogo() {
   const ref = useRef({ jogadores, donos, atual, compra });
   ref.current = { jogadores, donos, atual, compra };
 
-  const addLog = useCallback((t: string) => {
-    setLog((l) => [t, ...l].slice(0, 40));
-  }, []);
 
   const ajustar = useCallback((id: number, delta: number) => {
     setJogadores((js) =>
@@ -65,9 +59,8 @@ export function Jogo() {
       ajustar(id, -tile.preco);
       setDonos((d) => ({ ...d, [idx]: id }));
       const nome = ref.current.jogadores.find((j) => j.id === id)?.nome;
-      addLog(`${nome} comprou ${tile.nome} por R$ ${tile.preco}.`);
     },
-    [addLog, ajustar],
+    [ajustar],
   );
 
   const mostrar = useCallback(
@@ -103,7 +96,6 @@ export function Jogo() {
                 jogadorId,
               });
             } else {
-              addLog(`${jog.nome} dispensou ${tile.nome}.`);
               await mostrar({
                 titulo: tile.nome,
                 subtitulo: `${cat} · Livre`,
@@ -122,9 +114,6 @@ export function Jogo() {
           const donoJog = ref.current.jogadores.find((j) => j.id === dono)!;
           ajustar(jogadorId, -tile.aluguel);
           ajustar(dono, tile.aluguel);
-          addLog(
-            `${jog.nome} pagou R$ ${tile.aluguel} de frete a ${donoJog.nome} em ${tile.nome}.`,
-          );
           await mostrar({
             titulo: tile.nome,
             subtitulo: `${cat} · Frete`,
@@ -136,7 +125,6 @@ export function Jogo() {
             jogadorId,
           });
         } else {
-          addLog(`${jog.nome} operou em ${tile.nome} (ativo próprio).`);
           await mostrar({
             titulo: tile.nome,
             subtitulo: `${cat} · Ativo próprio`,
@@ -149,7 +137,6 @@ export function Jogo() {
         }
       } else if (tile.kind === "taxa") {
         ajustar(jogadorId, -tile.valor);
-        addLog(`${jog.nome} pagou ${tile.nome}: R$ ${tile.valor}.`);
         await mostrar({
           titulo: tile.nome,
           subtitulo: "Cobrança obrigatória",
@@ -162,7 +149,6 @@ export function Jogo() {
         });
       } else if (tile.kind === "bonus") {
         ajustar(jogadorId, tile.valor);
-        addLog(`${jog.nome} recebeu ${tile.nome}: +R$ ${tile.valor}.`);
         await mostrar({
           titulo: tile.nome,
           subtitulo: "Receita extra",
@@ -176,7 +162,6 @@ export function Jogo() {
       } else if (tile.kind === "evento") {
         const ev = EVENTOS[Math.floor(Math.random() * EVENTOS.length)]!;
         ajustar(jogadorId, ev.delta);
-        addLog(`${jog.nome} — ${ev.texto} (${ev.delta > 0 ? "+" : ""}R$ ${ev.delta})`);
         await mostrar({
           titulo: "Boletim Logístico",
           subtitulo: ev.delta >= 0 ? "Evento favorável" : "Evento adverso",
@@ -191,7 +176,6 @@ export function Jogo() {
           jogadorId,
         });
       } else if (tile.kind === "parada") {
-        addLog(`${jog.nome} parou em ${tile.nome}. Nada acontece.`);
         await mostrar({
           titulo: tile.nome,
           subtitulo: "Parada técnica",
@@ -201,7 +185,6 @@ export function Jogo() {
           jogadorId,
         });
       } else {
-        addLog(`${jog.nome} chegou ao ${tile.nome}.`);
         await mostrar({
           titulo: tile.nome,
           subtitulo: "Hub logístico",
@@ -212,7 +195,7 @@ export function Jogo() {
         });
       }
     },
-    [addLog, ajustar, comprar, mostrar],
+    [ajustar, comprar, mostrar],
   );
 
   const proximoTurno = useCallback(() => {
@@ -253,7 +236,6 @@ export function Jogo() {
     setPassos(total);
     setGirando(false);
     const jog = ref.current.jogadores[ref.current.atual]!;
-    addLog(`${jog.nome} tirou ${d1} + ${d2} = ${total}.`);
     await espera(500);
 
     let pos = jog.posicao;
@@ -261,7 +243,6 @@ export function Jogo() {
       pos = (pos + 1) % TABULEIRO.length;
       if (pos === 0) {
         ajustar(jog.id, SALARIO);
-        addLog(`${jog.nome} passou pelo Centro de Distribuição: +R$ ${SALARIO}.`);
       }
       const p = pos;
       setJogadores((js) => js.map((j) => (j.id === jog.id ? { ...j, posicao: p } : j)));
@@ -275,7 +256,7 @@ export function Jogo() {
       proximoTurno();
     }
     setRolando(false);
-  }, [addLog, ajustar, proximoTurno, resolver]);
+  }, [ajustar, proximoTurno, resolver]);
 
   // Turno automático da CPU
   useEffect(() => {
@@ -322,7 +303,6 @@ export function Jogo() {
     setJogadores(novosJogadores());
     setDonos({});
     setAtual(0);
-    setLog(["Nova partida iniciada. Boa sorte!"]);
     setCompra(null);
     setFim(false);
     setPassos(null);
@@ -341,12 +321,17 @@ export function Jogo() {
         <Carteira jogador={humano} />
 
         <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-          <p className="mb-3 text-[10px] uppercase tracking-widest text-muted-foreground">
-            Rodadas restantes
-          </p>
+          <div className="mb-3 flex items-end justify-between">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              Rodada do jogo
+            </p>
+            <p className="font-display text-xl font-bold leading-none text-foreground">
+              {Math.min(30, Math.max(...jogadores.map((j) => j.rodadas)))}
+              <span className="ml-1 text-xs font-normal text-muted-foreground">/ 30</span>
+            </p>
+          </div>
           <div className="space-y-1.5">
             {jogadores.map((j) => {
-              const restantes = Math.max(0, 30 - j.rodadas);
               const pct = (j.rodadas / 30) * 100;
               return (
                 <div key={j.id} className="flex items-center gap-2">
@@ -359,24 +344,17 @@ export function Jogo() {
                   </span>
                   <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
                     <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${pct}%` }}
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${pct}%`, background: j.cor }}
                     />
                   </div>
                   <span className="w-8 text-right text-[10px] text-muted-foreground">
-                    {restantes}
+                    {j.rodadas}
                   </span>
                 </div>
               );
             })}
           </div>
-        </div>
-
-        <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-          <h2 className="mb-3 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            Histórico
-          </h2>
-          <Log itens={log} />
         </div>
       </aside>
 
@@ -472,7 +450,6 @@ export function Jogo() {
                   variant="secondary"
                   onClick={() => {
                     setCompra(null);
-                    addLog(`Você dispensou ${tileCompra.nome}.`);
                     proximoTurno();
                   }}
                 >
