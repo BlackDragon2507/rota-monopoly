@@ -353,8 +353,8 @@ export function Jogo() {
       await espera(200);
     }
     await espera(250);
-    await resolver(jog.id, pos);
-    if (ref.current.compra === null) {
+    const precisaOk = await resolver(jog.id, pos);
+    if (!precisaOk && ref.current.compra === null) {
       await espera(400);
       proximoTurno();
     }
