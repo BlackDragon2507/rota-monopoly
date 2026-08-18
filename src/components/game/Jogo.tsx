@@ -37,10 +37,6 @@ export function Jogo() {
   const [rolando, setRolando] = useState(false);
   const [girando, setGirando] = useState(false);
   const [passos, setPassos] = useState<number | null>(null);
-  const [andados, setAndados] = useState(0);
-  const [log, setLog] = useState<string[]>([
-    "Bem-vindo ao RotaLog! Role os dados para expandir seu império logístico.",
-  ]);
   const [compra, setCompra] = useState<number | null>(null);
   const [aviso, setAviso] = useState<Aviso | null>(null);
   const [fim, setFim] = useState(false);
