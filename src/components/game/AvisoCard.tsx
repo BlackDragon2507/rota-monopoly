@@ -1,9 +1,11 @@
 import type { Jogador } from "@/game/types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Anchor,
   ArrowDownRight,
   ArrowUpRight,
+  Check,
   Coins,
   Handshake,
   Landmark,
@@ -51,7 +53,7 @@ export type Aviso = {
   jogadorId: number;
 };
 
-export function AvisoCard({ aviso, jogadores }: { aviso: Aviso; jogadores: Jogador[] }) {
+export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores: Jogador[]; onOk?: (() => void) | undefined }) {
   const jog = jogadores.find((j) => j.id === aviso.jogadorId);
   const Icone = ICONES[aviso.icone];
   const tomTexto =
@@ -126,6 +128,12 @@ export function AvisoCard({ aviso, jogadores }: { aviso: Aviso; jogadores: Jogad
           <p className="rounded-xl border border-border/60 bg-background/60 px-3 py-2 text-xs text-muted-foreground">
             Nenhum valor foi movimentado nesta casa.
           </p>
+        )}
+
+        {onOk && (
+          <Button className="w-full gap-2" onClick={onOk}>
+            <Check className="size-4" /> OK
+          </Button>
         )}
       </div>
     </div>

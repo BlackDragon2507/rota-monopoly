@@ -40,10 +40,11 @@ export function Jogo() {
   const [andados, setAndados] = useState(0);
   const [compra, setCompra] = useState<number | null>(null);
   const [aviso, setAviso] = useState<Aviso | null>(null);
+  const [esperandoOk, setEsperandoOk] = useState(false);
   const [fim, setFim] = useState(false);
 
-  const ref = useRef({ jogadores, donos, atual, compra });
-  ref.current = { jogadores, donos, atual, compra };
+  const ref = useRef({ jogadores, donos, atual, compra, esperandoOk });
+  ref.current = { jogadores, donos, atual, compra, esperandoOk };
 
 
   const ajustar = useCallback((id: number, delta: number) => {
@@ -73,10 +74,15 @@ export function Jogo() {
   );
 
   const resolver = useCallback(
-    async (jogadorId: number, idx: number) => {
+    async (jogadorId: number, idx: number): Promise<boolean> => {
       const tile = TABULEIRO[idx];
       const jog = ref.current.jogadores.find((j) => j.id === jogadorId)!;
-      if (!tile) return;
+      if (!tile) return false;
+
+      const avisoManual = (a: Aviso) => {
+        setAviso(a);
+        setEsperandoOk(true);
+      };
 
       if (tile.kind === "prop") {
         const cat = CATEGORIA_LABEL[tile.categoria];
@@ -106,15 +112,29 @@ export function Jogo() {
                 jogadorId,
               });
             }
+            return false;
           } else {
             setCompra(idx);
-            return;
+            return true;
           }
         } else if (dono !== jogadorId) {
           const donoJog = ref.current.jogadores.find((j) => j.id === dono)!;
           ajustar(jogadorId, -tile.aluguel);
           ajustar(dono, tile.aluguel);
-          await mostrar({
+          if (jog.cpu) {
+            await mostrar({
+              titulo: tile.nome,
+              subtitulo: `${cat} · Frete`,
+              texto: `Este ativo pertence a ${donoJog.nome}. ${jog.nome} precisou pagar o frete da operação.`,
+              detalhe: `Valor transferido para ${donoJog.nome}: R$ ${tile.aluguel}`,
+              delta: -tile.aluguel,
+              tom: "ruim",
+              icone: "frete",
+              jogadorId,
+            });
+            return false;
+          }
+          avisoManual({
             titulo: tile.nome,
             subtitulo: `${cat} · Frete`,
             texto: `Este ativo pertence a ${donoJog.nome}. ${jog.nome} precisou pagar o frete da operação.`,
@@ -124,8 +144,21 @@ export function Jogo() {
             icone: "frete",
             jogadorId,
           });
+          return true;
         } else {
-          await mostrar({
+          if (jog.cpu) {
+            await mostrar({
+              titulo: tile.nome,
+              subtitulo: `${cat} · Ativo próprio`,
+              texto: `${jog.nome} opera em ativo próprio: nenhum frete é cobrado.`,
+              detalhe: `Frete cobrado dos concorrentes: R$ ${tile.aluguel}`,
+              tom: "neutro",
+              icone: tile.categoria,
+              jogadorId,
+            });
+            return false;
+          }
+          avisoManual({
             titulo: tile.nome,
             subtitulo: `${cat} · Ativo próprio`,
             texto: `${jog.nome} opera em ativo próprio: nenhum frete é cobrado.`,
@@ -134,10 +167,24 @@ export function Jogo() {
             icone: tile.categoria,
             jogadorId,
           });
+          return true;
         }
       } else if (tile.kind === "taxa") {
         ajustar(jogadorId, -tile.valor);
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: tile.nome,
+            subtitulo: "Cobrança obrigatória",
+            texto: `${jog.nome} parou numa casa de cobrança e teve que pagar imediatamente.`,
+            detalhe: `Débito de R$ ${tile.valor} descontado do caixa.`,
+            delta: -tile.valor,
+            tom: "ruim",
+            icone: "taxa",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: tile.nome,
           subtitulo: "Cobrança obrigatória",
           texto: `${jog.nome} parou numa casa de cobrança e teve que pagar imediatamente.`,
@@ -147,9 +194,23 @@ export function Jogo() {
           icone: "taxa",
           jogadorId,
         });
+        return true;
       } else if (tile.kind === "bonus") {
         ajustar(jogadorId, tile.valor);
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: tile.nome,
+            subtitulo: "Receita extra",
+            texto: `${jog.nome} fechou uma operação lucrativa e recebeu um pagamento extra.`,
+            detalhe: `Crédito de R$ ${tile.valor} no caixa.`,
+            delta: tile.valor,
+            tom: "bom",
+            icone: "bonus",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: tile.nome,
           subtitulo: "Receita extra",
           texto: `${jog.nome} fechou uma operação lucrativa e recebeu um pagamento extra.`,
@@ -159,10 +220,27 @@ export function Jogo() {
           icone: "bonus",
           jogadorId,
         });
+        return true;
       } else if (tile.kind === "evento") {
         const ev = EVENTOS[Math.floor(Math.random() * EVENTOS.length)]!;
         ajustar(jogadorId, ev.delta);
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: "Boletim Logístico",
+            subtitulo: ev.delta >= 0 ? "Evento favorável" : "Evento adverso",
+            texto: ev.texto,
+            detalhe:
+              ev.delta >= 0
+                ? `Impacto positivo de R$ ${ev.delta} no caixa de ${jog.nome}.`
+                : `Impacto negativo de R$ ${Math.abs(ev.delta)} no caixa de ${jog.nome}.`,
+            delta: ev.delta,
+            tom: ev.delta >= 0 ? "bom" : "ruim",
+            icone: "evento",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: "Boletim Logístico",
           subtitulo: ev.delta >= 0 ? "Evento favorável" : "Evento adverso",
           texto: ev.texto,
@@ -175,8 +253,20 @@ export function Jogo() {
           icone: "evento",
           jogadorId,
         });
+        return true;
       } else if (tile.kind === "parada") {
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: tile.nome,
+            subtitulo: "Parada técnica",
+            texto: `${jog.nome} perdeu tempo aqui, mas nenhum valor foi cobrado.`,
+            tom: "neutro",
+            icone: "parada",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: tile.nome,
           subtitulo: "Parada técnica",
           texto: `${jog.nome} perdeu tempo aqui, mas nenhum valor foi cobrado.`,
@@ -184,8 +274,20 @@ export function Jogo() {
           icone: "parada",
           jogadorId,
         });
+        return true;
       } else {
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: tile.nome,
+            subtitulo: "Hub logístico",
+            texto: `${jog.nome} chegou ao hub. Ao completar a volta, recebe R$ ${SALARIO}.`,
+            tom: "neutro",
+            icone: "inicio",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: tile.nome,
           subtitulo: "Hub logístico",
           texto: `${jog.nome} chegou ao hub. Ao completar a volta, recebe R$ ${SALARIO}.`,
@@ -193,6 +295,7 @@ export function Jogo() {
           icone: "inicio",
           jogadorId,
         });
+        return true;
       }
     },
     [ajustar, comprar, mostrar],
@@ -250,17 +353,23 @@ export function Jogo() {
       await espera(200);
     }
     await espera(250);
-    await resolver(jog.id, pos);
-    if (ref.current.compra === null) {
+    const precisaOk = await resolver(jog.id, pos);
+    if (!precisaOk && ref.current.compra === null) {
       await espera(400);
       proximoTurno();
     }
     setRolando(false);
   }, [ajustar, proximoTurno, resolver]);
 
+  const confirmarAviso = useCallback(() => {
+    setAviso(null);
+    setEsperandoOk(false);
+    proximoTurno();
+  }, [proximoTurno]);
+
   // Turno automático da CPU
   useEffect(() => {
-    if (fim || rolando || compra !== null) return;
+    if (fim || rolando || compra !== null || esperandoOk) return;
     const jog = jogadores[atual];
     if (!jog?.cpu || jog.falido) return;
     const t = setTimeout(() => {
@@ -271,7 +380,7 @@ export function Jogo() {
       })();
     }, 700);
     return () => clearTimeout(t);
-  }, [atual, jogadores, rolando, compra, fim, rolar, proximoTurno]);
+  }, [atual, jogadores, rolando, compra, esperandoOk, fim, rolar, proximoTurno]);
 
   // Fim de jogo
   useEffect(() => {
@@ -304,6 +413,8 @@ export function Jogo() {
     setDonos({});
     setAtual(0);
     setCompra(null);
+    setAviso(null);
+    setEsperandoOk(false);
     setFim(false);
     setPassos(null);
     setAndados(0);
@@ -312,13 +423,60 @@ export function Jogo() {
 
   const humano = jogadores[0]!;
   const jogadorDaVez = jogadores[atual]!;
-  const minhaVez = !jogadorDaVez.cpu && !rolando && compra === null && !fim;
+  const minhaVez = !jogadorDaVez.cpu && !rolando && compra === null && !esperandoOk && !fim;
   const tileCompra = compra !== null ? TABULEIRO[compra] : null;
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:grid lg:grid-cols-[1fr_360px]">
       <aside className="order-1 space-y-4 lg:order-2">
         <Carteira jogador={humano} />
+
+        <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Vez de
+              </p>
+              <p className="font-display text-lg font-bold" style={{ color: jogadorDaVez.cor }}>
+                {jogadorDaVez.nome}
+              </p>
+            </div>
+            <span className="rounded-full border border-border/60 px-3 py-1 text-[11px] text-muted-foreground">
+              {girando
+                ? "Rolando os dados…"
+                : rolando
+                  ? "Movendo o peão…"
+                  : minhaVez
+                    ? "Sua vez de rolar"
+                    : esperandoOk
+                      ? "Aguarde OK"
+                      : "Aguarde…"}
+            </span>
+          </div>
+
+          <PainelDados
+            dados={dados}
+            rolando={girando}
+            passos={passos}
+            andados={andados}
+            casaNome={TABULEIRO[jogadorDaVez.posicao]?.nome ?? ""}
+          />
+
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <Button
+              className="h-12 flex-1 gap-2 text-base"
+              disabled={!minhaVez}
+              onClick={() => {
+                void rolar();
+              }}
+            >
+              <Dices className="size-5" /> {rolando ? "Rolando…" : "Rolar dados"}
+            </Button>
+            <Button variant="secondary" className="h-12 px-4" onClick={reiniciar} aria-label="Reiniciar partida">
+              <RotateCcw className="size-5" />
+            </Button>
+          </div>
+        </div>
 
         <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
           <div className="mb-3 flex items-end justify-between">
@@ -379,57 +537,14 @@ export function Jogo() {
             destaque={jogadorDaVez.posicao}
           />
           {aviso && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
-              <AvisoCard aviso={aviso} jogadores={jogadores} />
+            <div className="absolute inset-0 flex items-center justify-center p-6">
+              <AvisoCard
+                aviso={aviso}
+                jogadores={jogadores}
+                onOk={!jogadorDaVez.cpu ? confirmarAviso : undefined}
+              />
             </div>
           )}
-        </div>
-
-        <div className="mx-auto w-full max-w-[min(100%,760px)]">
-          <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                  Vez de
-                </p>
-                <p className="font-display text-lg font-bold" style={{ color: jogadorDaVez.cor }}>
-                  {jogadorDaVez.nome}
-                </p>
-              </div>
-              <span className="rounded-full border border-border/60 px-3 py-1 text-[11px] text-muted-foreground">
-                {girando
-                  ? "Rolando os dados…"
-                  : rolando
-                    ? "Movendo o peão…"
-                    : minhaVez
-                      ? "Sua vez de rolar"
-                      : "Aguarde…"}
-              </span>
-            </div>
-
-            <PainelDados
-              dados={dados}
-              rolando={girando}
-              passos={passos}
-              andados={andados}
-              casaNome={TABULEIRO[jogadorDaVez.posicao]?.nome ?? ""}
-            />
-
-            <div className="mt-4 flex items-center justify-center gap-2">
-              <Button
-                className="h-12 gap-2 px-8 text-base"
-                disabled={!minhaVez}
-                onClick={() => {
-                  void rolar();
-                }}
-              >
-                <Dices className="size-5" /> {rolando ? "Rolando…" : "Rolar dados"}
-              </Button>
-              <Button variant="secondary" className="h-12 px-4" onClick={reiniciar} aria-label="Reiniciar partida">
-                <RotateCcw className="size-5" />
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
 
