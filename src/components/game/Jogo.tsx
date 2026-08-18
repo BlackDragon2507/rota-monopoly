@@ -40,10 +40,11 @@ export function Jogo() {
   const [andados, setAndados] = useState(0);
   const [compra, setCompra] = useState<number | null>(null);
   const [aviso, setAviso] = useState<Aviso | null>(null);
+  const [esperandoOk, setEsperandoOk] = useState(false);
   const [fim, setFim] = useState(false);
 
-  const ref = useRef({ jogadores, donos, atual, compra });
-  ref.current = { jogadores, donos, atual, compra };
+  const ref = useRef({ jogadores, donos, atual, compra, esperandoOk });
+  ref.current = { jogadores, donos, atual, compra, esperandoOk };
 
 
   const ajustar = useCallback((id: number, delta: number) => {
