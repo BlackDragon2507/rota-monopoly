@@ -361,9 +361,15 @@ export function Jogo() {
     setRolando(false);
   }, [ajustar, proximoTurno, resolver]);
 
+  const confirmarAviso = useCallback(() => {
+    setAviso(null);
+    setEsperandoOk(false);
+    proximoTurno();
+  }, [proximoTurno]);
+
   // Turno automático da CPU
   useEffect(() => {
-    if (fim || rolando || compra !== null) return;
+    if (fim || rolando || compra !== null || esperandoOk) return;
     const jog = jogadores[atual];
     if (!jog?.cpu || jog.falido) return;
     const t = setTimeout(() => {
@@ -374,7 +380,7 @@ export function Jogo() {
       })();
     }, 700);
     return () => clearTimeout(t);
-  }, [atual, jogadores, rolando, compra, fim, rolar, proximoTurno]);
+  }, [atual, jogadores, rolando, compra, esperandoOk, fim, rolar, proximoTurno]);
 
   // Fim de jogo
   useEffect(() => {
