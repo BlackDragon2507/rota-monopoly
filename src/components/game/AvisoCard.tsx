@@ -129,6 +129,12 @@ export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores:
             Nenhum valor foi movimentado nesta casa.
           </p>
         )}
+
+        {onOk && (
+          <Button className="w-full gap-2" onClick={onOk}>
+            <Check className="size-4" /> OK
+          </Button>
+        )}
       </div>
     </div>
   );
