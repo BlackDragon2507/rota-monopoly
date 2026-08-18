@@ -114,8 +114,6 @@ export function Jogo() {
           const donoJog = ref.current.jogadores.find((j) => j.id === dono)!;
           ajustar(jogadorId, -tile.aluguel);
           ajustar(dono, tile.aluguel);
-            `${jog.nome} pagou R$ ${tile.aluguel} de frete a ${donoJog.nome} em ${tile.nome}.`,
-          );
           await mostrar({
             titulo: tile.nome,
             subtitulo: `${cat} · Frete`,
