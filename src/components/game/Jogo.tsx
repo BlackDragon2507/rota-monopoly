@@ -413,6 +413,8 @@ export function Jogo() {
     setDonos({});
     setAtual(0);
     setCompra(null);
+    setAviso(null);
+    setEsperandoOk(false);
     setFim(false);
     setPassos(null);
     setAndados(0);
@@ -421,7 +423,7 @@ export function Jogo() {
 
   const humano = jogadores[0]!;
   const jogadorDaVez = jogadores[atual]!;
-  const minhaVez = !jogadorDaVez.cpu && !rolando && compra === null && !fim;
+  const minhaVez = !jogadorDaVez.cpu && !rolando && compra === null && !esperandoOk && !fim;
   const tileCompra = compra !== null ? TABULEIRO[compra] : null;
 
   return (
