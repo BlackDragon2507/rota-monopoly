@@ -51,7 +51,7 @@ export type Aviso = {
   jogadorId: number;
 };
 
-export function AvisoCard({ aviso, jogadores }: { aviso: Aviso; jogadores: Jogador[] }) {
+export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores: Jogador[]; onOk?: () => void }) {
   const jog = jogadores.find((j) => j.id === aviso.jogadorId);
   const Icone = ICONES[aviso.icone];
   const tomTexto =
