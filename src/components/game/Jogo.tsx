@@ -74,10 +74,15 @@ export function Jogo() {
   );
 
   const resolver = useCallback(
-    async (jogadorId: number, idx: number) => {
+    async (jogadorId: number, idx: number): Promise<boolean> => {
       const tile = TABULEIRO[idx];
       const jog = ref.current.jogadores.find((j) => j.id === jogadorId)!;
-      if (!tile) return;
+      if (!tile) return false;
+
+      const avisoManual = (a: Aviso) => {
+        setAviso(a);
+        setEsperandoOk(true);
+      };
 
       if (tile.kind === "prop") {
         const cat = CATEGORIA_LABEL[tile.categoria];
@@ -107,15 +112,29 @@ export function Jogo() {
                 jogadorId,
               });
             }
+            return false;
           } else {
             setCompra(idx);
-            return;
+            return true;
           }
         } else if (dono !== jogadorId) {
           const donoJog = ref.current.jogadores.find((j) => j.id === dono)!;
           ajustar(jogadorId, -tile.aluguel);
           ajustar(dono, tile.aluguel);
-          await mostrar({
+          if (jog.cpu) {
+            await mostrar({
+              titulo: tile.nome,
+              subtitulo: `${cat} · Frete`,
+              texto: `Este ativo pertence a ${donoJog.nome}. ${jog.nome} precisou pagar o frete da operação.`,
+              detalhe: `Valor transferido para ${donoJog.nome}: R$ ${tile.aluguel}`,
+              delta: -tile.aluguel,
+              tom: "ruim",
+              icone: "frete",
+              jogadorId,
+            });
+            return false;
+          }
+          avisoManual({
             titulo: tile.nome,
             subtitulo: `${cat} · Frete`,
             texto: `Este ativo pertence a ${donoJog.nome}. ${jog.nome} precisou pagar o frete da operação.`,
@@ -125,8 +144,21 @@ export function Jogo() {
             icone: "frete",
             jogadorId,
           });
+          return true;
         } else {
-          await mostrar({
+          if (jog.cpu) {
+            await mostrar({
+              titulo: tile.nome,
+              subtitulo: `${cat} · Ativo próprio`,
+              texto: `${jog.nome} opera em ativo próprio: nenhum frete é cobrado.`,
+              detalhe: `Frete cobrado dos concorrentes: R$ ${tile.aluguel}`,
+              tom: "neutro",
+              icone: tile.categoria,
+              jogadorId,
+            });
+            return false;
+          }
+          avisoManual({
             titulo: tile.nome,
             subtitulo: `${cat} · Ativo próprio`,
             texto: `${jog.nome} opera em ativo próprio: nenhum frete é cobrado.`,
@@ -135,10 +167,24 @@ export function Jogo() {
             icone: tile.categoria,
             jogadorId,
           });
+          return true;
         }
       } else if (tile.kind === "taxa") {
         ajustar(jogadorId, -tile.valor);
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: tile.nome,
+            subtitulo: "Cobrança obrigatória",
+            texto: `${jog.nome} parou numa casa de cobrança e teve que pagar imediatamente.`,
+            detalhe: `Débito de R$ ${tile.valor} descontado do caixa.`,
+            delta: -tile.valor,
+            tom: "ruim",
+            icone: "taxa",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: tile.nome,
           subtitulo: "Cobrança obrigatória",
           texto: `${jog.nome} parou numa casa de cobrança e teve que pagar imediatamente.`,
@@ -148,9 +194,23 @@ export function Jogo() {
           icone: "taxa",
           jogadorId,
         });
+        return true;
       } else if (tile.kind === "bonus") {
         ajustar(jogadorId, tile.valor);
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: tile.nome,
+            subtitulo: "Receita extra",
+            texto: `${jog.nome} fechou uma operação lucrativa e recebeu um pagamento extra.`,
+            detalhe: `Crédito de R$ ${tile.valor} no caixa.`,
+            delta: tile.valor,
+            tom: "bom",
+            icone: "bonus",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: tile.nome,
           subtitulo: "Receita extra",
           texto: `${jog.nome} fechou uma operação lucrativa e recebeu um pagamento extra.`,
@@ -160,10 +220,27 @@ export function Jogo() {
           icone: "bonus",
           jogadorId,
         });
+        return true;
       } else if (tile.kind === "evento") {
         const ev = EVENTOS[Math.floor(Math.random() * EVENTOS.length)]!;
         ajustar(jogadorId, ev.delta);
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: "Boletim Logístico",
+            subtitulo: ev.delta >= 0 ? "Evento favorável" : "Evento adverso",
+            texto: ev.texto,
+            detalhe:
+              ev.delta >= 0
+                ? `Impacto positivo de R$ ${ev.delta} no caixa de ${jog.nome}.`
+                : `Impacto negativo de R$ ${Math.abs(ev.delta)} no caixa de ${jog.nome}.`,
+            delta: ev.delta,
+            tom: ev.delta >= 0 ? "bom" : "ruim",
+            icone: "evento",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: "Boletim Logístico",
           subtitulo: ev.delta >= 0 ? "Evento favorável" : "Evento adverso",
           texto: ev.texto,
@@ -176,8 +253,20 @@ export function Jogo() {
           icone: "evento",
           jogadorId,
         });
+        return true;
       } else if (tile.kind === "parada") {
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: tile.nome,
+            subtitulo: "Parada técnica",
+            texto: `${jog.nome} perdeu tempo aqui, mas nenhum valor foi cobrado.`,
+            tom: "neutro",
+            icone: "parada",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: tile.nome,
           subtitulo: "Parada técnica",
           texto: `${jog.nome} perdeu tempo aqui, mas nenhum valor foi cobrado.`,
@@ -185,8 +274,20 @@ export function Jogo() {
           icone: "parada",
           jogadorId,
         });
+        return true;
       } else {
-        await mostrar({
+        if (jog.cpu) {
+          await mostrar({
+            titulo: tile.nome,
+            subtitulo: "Hub logístico",
+            texto: `${jog.nome} chegou ao hub. Ao completar a volta, recebe R$ ${SALARIO}.`,
+            tom: "neutro",
+            icone: "inicio",
+            jogadorId,
+          });
+          return false;
+        }
+        avisoManual({
           titulo: tile.nome,
           subtitulo: "Hub logístico",
           texto: `${jog.nome} chegou ao hub. Ao completar a volta, recebe R$ ${SALARIO}.`,
@@ -194,6 +295,7 @@ export function Jogo() {
           icone: "inicio",
           jogadorId,
         });
+        return true;
       }
     },
     [ajustar, comprar, mostrar],
