@@ -341,12 +341,17 @@ export function Jogo() {
         <Carteira jogador={humano} />
 
         <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-          <p className="mb-3 text-[10px] uppercase tracking-widest text-muted-foreground">
-            Rodadas restantes
-          </p>
+          <div className="mb-3 flex items-end justify-between">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              Rodada do jogo
+            </p>
+            <p className="font-display text-xl font-bold leading-none text-foreground">
+              {Math.min(30, Math.max(...jogadores.map((j) => j.rodadas)))}
+              <span className="ml-1 text-xs font-normal text-muted-foreground">/ 30</span>
+            </p>
+          </div>
           <div className="space-y-1.5">
             {jogadores.map((j) => {
-              const restantes = Math.max(0, 30 - j.rodadas);
               const pct = (j.rodadas / 30) * 100;
               return (
                 <div key={j.id} className="flex items-center gap-2">
@@ -359,24 +364,17 @@ export function Jogo() {
                   </span>
                   <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
                     <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${pct}%` }}
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${pct}%`, background: j.cor }}
                     />
                   </div>
                   <span className="w-8 text-right text-[10px] text-muted-foreground">
-                    {restantes}
+                    {j.rodadas}
                   </span>
                 </div>
               );
             })}
           </div>
-        </div>
-
-        <div className="rounded-2xl border border-border/60 bg-card/80 p-4">
-          <h2 className="mb-3 font-display text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            Histórico
-          </h2>
-          <Log itens={log} />
         </div>
       </aside>
 
