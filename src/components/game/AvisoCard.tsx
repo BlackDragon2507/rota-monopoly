@@ -1,9 +1,11 @@
 import type { Jogador } from "@/game/types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Anchor,
   ArrowDownRight,
   ArrowUpRight,
+  Check,
   Coins,
   Handshake,
   Landmark,
