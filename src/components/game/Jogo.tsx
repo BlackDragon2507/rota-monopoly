@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "./Board";
-import { Carteira, Log } from "./Painel";
+import { Carteira } from "./Painel";
 import { AvisoCard, type Aviso } from "./AvisoCard";
 import { PainelDados } from "./Dados";
 import { PlacarFinal } from "./PlacarFinal";
