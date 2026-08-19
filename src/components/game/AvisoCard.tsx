@@ -86,12 +86,12 @@ export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores:
 
       <div className="space-y-3 px-4 py-4 text-left">
         {jog && (
-          <p className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="size-2.5 rounded-full" style={{ background: jog.cor }} />
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="size-3 rounded-full" style={{ background: jog.cor }} />
             <span className="font-semibold text-foreground/90">{jog.nome}</span>
           </p>
         )}
-        <p className="text-sm text-foreground/90">{aviso.texto}</p>
+        <p className="text-base text-foreground/90">{aviso.texto}</p>
         {aviso.detalhe && (
           <p className="rounded-lg bg-secondary/50 px-3 py-2 text-xs text-muted-foreground">
             {aviso.detalhe}
