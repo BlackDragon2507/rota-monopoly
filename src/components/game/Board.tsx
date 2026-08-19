@@ -51,31 +51,32 @@ export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props)
               onClick={() => onTileClick?.(i)}
               style={{ gridRow: row, gridColumn: col }}
               className={cn(
-                "relative flex flex-col justify-between overflow-hidden rounded-lg border border-border/70 bg-card/80 p-1 text-left transition-all duration-200 hover:border-primary/60 md:p-1.5",
+                "relative flex flex-col justify-between overflow-hidden rounded-lg border border-border/70 bg-card/80 p-0.5 text-left transition-all duration-200 hover:border-primary/60 md:p-1",
                 destaque === i && "shadow-glow scale-[1.03] border-primary",
               )}
+              title={tile.nome}
             >
               {tile.kind === "prop" && (
                 <span
-                  className="absolute inset-x-0 top-0 h-1.5"
+                  className="absolute inset-x-0 top-0 h-1"
                   style={{ background: `var(--${tile.categoria})` }}
                 />
               )}
-              <div className="mt-1 flex items-center gap-1 text-muted-foreground">
+              <div className="mt-0.5 flex items-center gap-1 text-muted-foreground md:mt-1">
                 <TileIcon tile={tile} />
                 {tile.kind === "prop" && (
-                  <span className="text-[9px] font-semibold tracking-wider text-foreground/80 md:text-[10px]">
+                  <span className="text-[10px] font-bold tracking-wider text-foreground/90 md:text-xs">
                     {tile.sigla}
                   </span>
                 )}
               </div>
               <div className="min-w-0">
-                <p className="truncate text-[8px] leading-tight font-medium text-foreground/90 md:text-[10px]">
+                <p className="truncate text-[10px] leading-tight font-medium text-foreground md:text-xs lg:text-sm">
                   {tile.nome}
                 </p>
                 {tile.kind === "prop" && (
-                  <p className="text-[8px] text-muted-foreground md:text-[9px]">
-                    R$ {tile.preco}
+                  <p className="text-[9px] font-medium text-muted-foreground md:text-[10px]">
+                    R$ {tile.preco.toLocaleString("pt-BR")}
                   </p>
                 )}
               </div>
