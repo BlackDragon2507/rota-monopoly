@@ -329,7 +329,10 @@ export function Jogo() {
 
   const rolar = useCallback(async () => {
     if (ref.current.jogadores.every((j) => j.falido)) return;
+    if (rolandoRef.current) return;
+    rolandoRef.current = true;
     setRolando(true);
+
     setGirando(true);
     setAndados(0);
     setPassos(null);
