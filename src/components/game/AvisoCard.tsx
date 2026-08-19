@@ -64,7 +64,7 @@ export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores:
         : "text-primary";
 
   return (
-    <div className="animate-pop w-full max-w-sm overflow-hidden rounded-2xl border border-primary/50 bg-popover shadow-elev">
+    <div className="animate-pop w-full max-w-md overflow-hidden rounded-2xl border border-primary/50 bg-popover shadow-elev">
       <div className="flex items-center gap-3 border-b border-border/60 bg-secondary/60 px-4 py-3">
         <span
           className={cn(
