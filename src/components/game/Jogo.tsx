@@ -373,14 +373,19 @@ export function Jogo() {
     const jog = jogadores[atual];
     if (!jog?.cpu || jog.falido) return;
     const t = setTimeout(() => {
+      if (ocupadoRef.current) return;
+      ocupadoRef.current = true;
       void (async () => {
-        await rolar();
-        await espera(500);
-        proximoTurno();
+        try {
+          await rolar();
+        } finally {
+          ocupadoRef.current = false;
+        }
       })();
     }, 700);
     return () => clearTimeout(t);
-  }, [atual, jogadores, rolando, compra, esperandoOk, fim, rolar, proximoTurno]);
+  }, [atual, jogadores, rolando, compra, esperandoOk, fim, rolar]);
+
 
   // Fim de jogo
   useEffect(() => {
