@@ -64,7 +64,7 @@ export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores:
         : "text-primary";
 
   return (
-    <div className="animate-pop w-full max-w-sm overflow-hidden rounded-2xl border border-primary/50 bg-popover shadow-elev">
+    <div className="animate-pop w-full max-w-md overflow-hidden rounded-2xl border border-primary/50 bg-popover shadow-elev">
       <div className="flex items-center gap-3 border-b border-border/60 bg-secondary/60 px-4 py-3">
         <span
           className={cn(
@@ -75,10 +75,10 @@ export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores:
           <Icone className="size-5" />
         </span>
         <div className="min-w-0 text-left">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-accent">
+          <p className="text-xs uppercase tracking-[0.28em] text-accent">
             {aviso.subtitulo}
           </p>
-          <p className="font-display truncate text-lg font-bold text-foreground">
+          <p className="font-display truncate text-xl font-bold text-foreground">
             {aviso.titulo}
           </p>
         </div>
@@ -86,12 +86,12 @@ export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores:
 
       <div className="space-y-3 px-4 py-4 text-left">
         {jog && (
-          <p className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="size-2.5 rounded-full" style={{ background: jog.cor }} />
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="size-3 rounded-full" style={{ background: jog.cor }} />
             <span className="font-semibold text-foreground/90">{jog.nome}</span>
           </p>
         )}
-        <p className="text-sm text-foreground/90">{aviso.texto}</p>
+        <p className="text-base text-foreground/90">{aviso.texto}</p>
         {aviso.detalhe && (
           <p className="rounded-lg bg-secondary/50 px-3 py-2 text-xs text-muted-foreground">
             {aviso.detalhe}
