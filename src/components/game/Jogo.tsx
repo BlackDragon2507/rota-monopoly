@@ -45,6 +45,10 @@ export function Jogo() {
 
   const ref = useRef({ jogadores, donos, atual, compra, esperandoOk });
   ref.current = { jogadores, donos, atual, compra, esperandoOk };
+  const ocupadoRef = useRef(false);
+  const rolandoRef = useRef(false);
+
+
 
 
   const ajustar = useCallback((id: number, delta: number) => {
@@ -327,7 +331,10 @@ export function Jogo() {
 
   const rolar = useCallback(async () => {
     if (ref.current.jogadores.every((j) => j.falido)) return;
+    if (rolandoRef.current) return;
+    rolandoRef.current = true;
     setRolando(true);
+
     setGirando(true);
     setAndados(0);
     setPassos(null);
@@ -358,8 +365,10 @@ export function Jogo() {
       await espera(400);
       proximoTurno();
     }
+    rolandoRef.current = false;
     setRolando(false);
   }, [ajustar, proximoTurno, resolver]);
+
 
   const confirmarAviso = useCallback(() => {
     setAviso(null);
@@ -373,14 +382,19 @@ export function Jogo() {
     const jog = jogadores[atual];
     if (!jog?.cpu || jog.falido) return;
     const t = setTimeout(() => {
+      if (ocupadoRef.current) return;
+      ocupadoRef.current = true;
       void (async () => {
-        await rolar();
-        await espera(500);
-        proximoTurno();
+        try {
+          await rolar();
+        } finally {
+          ocupadoRef.current = false;
+        }
       })();
     }, 700);
     return () => clearTimeout(t);
-  }, [atual, jogadores, rolando, compra, esperandoOk, fim, rolar, proximoTurno]);
+  }, [atual, jogadores, rolando, compra, esperandoOk, fim, rolar]);
+
 
   // Fim de jogo
   useEffect(() => {
