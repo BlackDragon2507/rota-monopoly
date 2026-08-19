@@ -82,13 +82,13 @@ export function Log({ itens }: { itens: string[] }) {
 
 export function Carteira({ jogador }: { jogador: Jogador }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/80 px-4 py-3">
-      <Wallet className="size-5 text-primary" />
+    <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card/80 px-3 py-2 lg:gap-3 lg:px-4 lg:py-3">
+      <Wallet className="size-4 text-primary lg:size-5" />
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+        <p className="text-[9px] uppercase tracking-widest text-muted-foreground lg:text-[10px]">
           Caixa · {jogador.nome}
         </p>
-        <p className="font-display text-xl font-bold text-foreground">
+        <p className="font-display text-lg font-bold text-foreground lg:text-xl">
           R$ {jogador.dinheiro.toLocaleString("pt-BR")}
         </p>
       </div>
