@@ -441,7 +441,7 @@ export function Jogo() {
   const tileCompra = compra !== null ? TABULEIRO[compra] : null;
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden p-2 lg:grid lg:grid-cols-[1fr_300px] lg:gap-3 lg:p-3">
+    <div className="flex h-screen w-full flex-col overflow-hidden p-1 md:p-2 lg:grid lg:grid-cols-[1fr_300px] lg:gap-3 lg:p-3">
       <aside className="order-2 flex shrink-0 gap-2 overflow-x-auto pt-2 lg:order-2 lg:flex-col lg:gap-3 lg:overflow-visible lg:pt-0">
         <Carteira jogador={humano} />
 

@@ -37,8 +37,8 @@ type Props = {
 
 export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props) {
   return (
-    <div className="relative aspect-square h-auto max-h-full w-auto max-w-full rounded-3xl bg-mesa p-1 shadow-elev ring-1 ring-border md:p-2">
-      <div className="grid h-full w-full grid-cols-8 grid-rows-8 gap-1 md:gap-1.5">
+    <div className="relative aspect-square h-auto max-h-full w-auto max-w-full rounded-3xl bg-mesa p-0.5 shadow-elev ring-1 ring-border md:p-1.5">
+      <div className="grid h-full w-full grid-cols-8 grid-rows-8 gap-0.5 md:gap-1">
         {TABULEIRO.map((tile, i) => {
           const { row, col } = gridPos(i);
           const dono = donos[i];
