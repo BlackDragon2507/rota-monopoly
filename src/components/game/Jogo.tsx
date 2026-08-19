@@ -530,8 +530,8 @@ export function Jogo() {
         </div>
       </aside>
 
-      <div className="order-1 flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden lg:order-1">
-        <div className="relative h-full w-full">
+      <div className="order-1 flex min-h-0 flex-1 items-center justify-center overflow-hidden lg:order-1">
+        <div className="relative flex h-full w-full items-center justify-center">
           <Board
             jogadores={jogadores}
             donos={donos}
