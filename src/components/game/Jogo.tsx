@@ -441,21 +441,21 @@ export function Jogo() {
   const tileCompra = compra !== null ? TABULEIRO[compra] : null;
 
   return (
-    <div className="flex min-h-screen w-full flex-col gap-2 p-2 lg:grid lg:grid-cols-[1fr_320px] lg:gap-3 lg:p-3">
-      <aside className="order-1 flex shrink-0 gap-2 overflow-x-auto lg:order-2 lg:flex-col lg:gap-3 lg:overflow-visible">
+    <div className="flex h-screen w-full flex-col overflow-hidden p-2 lg:grid lg:grid-cols-[1fr_300px] lg:gap-3 lg:p-3">
+      <aside className="order-1 flex shrink-0 gap-2 overflow-x-auto pb-1 lg:order-2 lg:flex-col lg:gap-3 lg:overflow-visible lg:pb-0">
         <Carteira jogador={humano} />
 
-        <div className="min-w-[260px] flex-1 rounded-2xl border border-border/60 bg-card/80 p-3">
-          <div className="mb-3 flex items-center justify-between">
+        <div className="min-w-[200px] flex-1 rounded-2xl border border-border/60 bg-card/80 p-2 lg:min-w-0 lg:p-3">
+          <div className="mb-2 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              <p className="text-[9px] uppercase tracking-widest text-muted-foreground">
                 Vez de
               </p>
-              <p className="font-display text-base font-bold" style={{ color: jogadorDaVez.cor }}>
+              <p className="font-display text-sm font-bold" style={{ color: jogadorDaVez.cor }}>
                 {jogadorDaVez.nome}
               </p>
             </div>
-            <span className="rounded-full border border-border/60 px-3 py-1 text-[10px] text-muted-foreground">
+            <span className="rounded-full border border-border/60 px-2 py-0.5 text-[9px] text-muted-foreground">
               {girando
                 ? "Rolando…"
                 : rolando
@@ -476,30 +476,30 @@ export function Jogo() {
             casaNome={TABULEIRO[jogadorDaVez.posicao]?.nome ?? ""}
           />
 
-          <div className="mt-3 flex items-center justify-center gap-2">
+          <div className="mt-2 flex items-center justify-center gap-2">
             <Button
-              className="h-11 flex-1 gap-2 text-sm"
+              className="h-9 flex-1 gap-1.5 text-sm"
               disabled={!minhaVez}
               onClick={() => {
                 void rolar();
               }}
             >
-              <Dices className="size-4" /> {rolando ? "Rolando…" : "Rolar dados"}
+              <Dices className="size-4" /> {rolando ? "Rolando…" : "Rolar"}
             </Button>
-            <Button variant="secondary" className="h-11 px-3" onClick={reiniciar} aria-label="Reiniciar partida">
+            <Button variant="secondary" className="h-9 px-3" onClick={reiniciar} aria-label="Reiniciar partida">
               <RotateCcw className="size-4" />
             </Button>
           </div>
         </div>
 
-        <div className="min-w-[260px] flex-1 rounded-2xl border border-border/60 bg-card/80 p-3">
+        <div className="min-w-[200px] flex-1 rounded-2xl border border-border/60 bg-card/80 p-2 lg:min-w-0 lg:p-3">
           <div className="mb-2 flex items-end justify-between">
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Rodada do jogo
+            <p className="text-[9px] uppercase tracking-widest text-muted-foreground">
+              Rodada
             </p>
-            <p className="font-display text-lg font-bold leading-none text-foreground">
+            <p className="font-display text-base font-bold leading-none text-foreground">
               {Math.min(30, Math.max(...jogadores.map((j) => j.rodadas)))}
-              <span className="ml-1 text-xs font-normal text-muted-foreground">/ 30</span>
+              <span className="ml-1 text-xs font-normal text-muted-foreground">/30</span>
             </p>
           </div>
           <div className="space-y-1">
@@ -508,19 +508,19 @@ export function Jogo() {
               return (
                 <div key={j.id} className="flex items-center gap-2">
                   <span
-                    className="size-2.5 shrink-0 rounded-full"
+                    className="size-2 shrink-0 rounded-full"
                     style={{ background: j.cor }}
                   />
-                  <span className="min-w-0 flex-1 truncate text-xs text-foreground/90">
+                  <span className="min-w-0 flex-1 truncate text-[10px] text-foreground/90 lg:text-xs">
                     {j.nome}
                   </span>
-                  <div className="h-1.5 w-16 overflow-hidden rounded-full bg-secondary">
+                  <div className="h-1.5 w-12 overflow-hidden rounded-full bg-secondary lg:w-16">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{ width: `${pct}%`, background: j.cor }}
                     />
                   </div>
-                  <span className="w-6 text-right text-[10px] text-muted-foreground">
+                  <span className="w-5 text-right text-[9px] text-muted-foreground">
                     {j.rodadas}
                   </span>
                 </div>
