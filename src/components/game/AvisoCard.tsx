@@ -75,10 +75,10 @@ export function AvisoCard({ aviso, jogadores, onOk }: { aviso: Aviso; jogadores:
           <Icone className="size-5" />
         </span>
         <div className="min-w-0 text-left">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-accent">
+          <p className="text-xs uppercase tracking-[0.28em] text-accent">
             {aviso.subtitulo}
           </p>
-          <p className="font-display truncate text-lg font-bold text-foreground">
+          <p className="font-display truncate text-xl font-bold text-foreground">
             {aviso.titulo}
           </p>
         </div>
