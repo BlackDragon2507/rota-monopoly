@@ -20,11 +20,11 @@ const catIcon: Record<string, typeof Truck> = {
 function TileIcon({ tile }: { tile: Tile }) {
   if (tile.kind === "prop") {
     const Icon = catIcon[tile.categoria] ?? Package;
-    return <Icon className="size-3.5 md:size-4" strokeWidth={2.2} />;
+    return <Icon className="size-4 md:size-5" strokeWidth={2.2} />;
   }
-  if (tile.kind === "evento") return <HelpCircle className="size-4" />;
-  if (tile.kind === "inicio") return <Flag className="size-4" />;
-  return <Landmark className="size-4" />;
+  if (tile.kind === "evento") return <HelpCircle className="size-4 md:size-5" />;
+  if (tile.kind === "inicio") return <Flag className="size-4 md:size-5" />;
+  return <Landmark className="size-4 md:size-5" />;
 }
 
 type Props = {
@@ -37,8 +37,8 @@ type Props = {
 
 export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props) {
   return (
-    <div className="relative aspect-square h-auto max-h-full w-auto max-w-full rounded-3xl bg-mesa p-1 shadow-elev ring-1 ring-border md:p-2">
-      <div className="grid h-full w-full grid-cols-8 grid-rows-8 gap-1 md:gap-1.5">
+    <div className="relative aspect-square h-auto max-h-full w-auto max-w-full rounded-3xl bg-mesa p-0.5 shadow-elev ring-1 ring-border md:p-1.5">
+      <div className="grid h-full w-full grid-cols-8 grid-rows-8 gap-0.5 md:gap-1">
         {TABULEIRO.map((tile, i) => {
           const { row, col } = gridPos(i);
           const dono = donos[i];
@@ -51,31 +51,32 @@ export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props)
               onClick={() => onTileClick?.(i)}
               style={{ gridRow: row, gridColumn: col }}
               className={cn(
-                "relative flex flex-col justify-between overflow-hidden rounded-lg border border-border/70 bg-card/80 p-1 text-left transition-all duration-200 hover:border-primary/60 md:p-1.5",
+                "relative flex flex-col justify-between overflow-hidden rounded-lg border border-border/70 bg-card/80 p-0.5 text-left transition-all duration-200 hover:border-primary/60 md:p-1",
                 destaque === i && "shadow-glow scale-[1.03] border-primary",
               )}
+              title={tile.nome}
             >
               {tile.kind === "prop" && (
                 <span
-                  className="absolute inset-x-0 top-0 h-1.5"
+                  className="absolute inset-x-0 top-0 h-1"
                   style={{ background: `var(--${tile.categoria})` }}
                 />
               )}
-              <div className="mt-1 flex items-center gap-1 text-muted-foreground">
+              <div className="mt-0.5 flex items-center gap-1 text-muted-foreground md:mt-1">
                 <TileIcon tile={tile} />
                 {tile.kind === "prop" && (
-                  <span className="text-[9px] font-semibold tracking-wider text-foreground/80 md:text-[10px]">
+                  <span className="text-[10px] font-bold tracking-wider text-foreground/90 md:text-xs">
                     {tile.sigla}
                   </span>
                 )}
               </div>
               <div className="min-w-0">
-                <p className="truncate text-[8px] leading-tight font-medium text-foreground/90 md:text-[10px]">
+                <p className="truncate text-[10px] leading-tight font-medium text-foreground md:text-xs lg:text-sm">
                   {tile.nome}
                 </p>
                 {tile.kind === "prop" && (
-                  <p className="text-[8px] text-muted-foreground md:text-[9px]">
-                    R$ {tile.preco}
+                  <p className="text-[9px] font-medium text-muted-foreground md:text-[10px]">
+                    R$ {tile.preco.toLocaleString("pt-BR")}
                   </p>
                 )}
               </div>
@@ -106,7 +107,7 @@ export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props)
                     key={j.id}
                     viewBox="0 0 24 24"
                     className={cn(
-                      "h-4 w-4 drop-shadow-sm transition-transform md:h-5 md:w-5",
+                      "h-5 w-5 drop-shadow-sm transition-transform md:h-6 md:w-6",
                       jogadores[atual]?.id === j.id && "-translate-y-1 scale-125",
                     )}
                     style={{ color: j.cor }}
