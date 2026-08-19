@@ -46,6 +46,8 @@ export function Jogo() {
   const ref = useRef({ jogadores, donos, atual, compra, esperandoOk });
   ref.current = { jogadores, donos, atual, compra, esperandoOk };
   const ocupadoRef = useRef(false);
+  const rolandoRef = useRef(false);
+
 
 
 
