@@ -20,11 +20,11 @@ const catIcon: Record<string, typeof Truck> = {
 function TileIcon({ tile }: { tile: Tile }) {
   if (tile.kind === "prop") {
     const Icon = catIcon[tile.categoria] ?? Package;
-    return <Icon className="size-3.5 md:size-4" strokeWidth={2.2} />;
+    return <Icon className="size-4 md:size-5" strokeWidth={2.2} />;
   }
-  if (tile.kind === "evento") return <HelpCircle className="size-4" />;
-  if (tile.kind === "inicio") return <Flag className="size-4" />;
-  return <Landmark className="size-4" />;
+  if (tile.kind === "evento") return <HelpCircle className="size-4 md:size-5" />;
+  if (tile.kind === "inicio") return <Flag className="size-4 md:size-5" />;
+  return <Landmark className="size-4 md:size-5" />;
 }
 
 type Props = {
@@ -107,7 +107,7 @@ export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props)
                     key={j.id}
                     viewBox="0 0 24 24"
                     className={cn(
-                      "h-4 w-4 drop-shadow-sm transition-transform md:h-5 md:w-5",
+                      "h-5 w-5 drop-shadow-sm transition-transform md:h-6 md:w-6",
                       jogadores[atual]?.id === j.id && "-translate-y-1 scale-125",
                     )}
                     style={{ color: j.cor }}
