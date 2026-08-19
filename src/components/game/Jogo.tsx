@@ -365,8 +365,10 @@ export function Jogo() {
       await espera(400);
       proximoTurno();
     }
+    rolandoRef.current = false;
     setRolando(false);
   }, [ajustar, proximoTurno, resolver]);
+
 
   const confirmarAviso = useCallback(() => {
     setAviso(null);
