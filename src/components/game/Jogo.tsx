@@ -42,12 +42,42 @@ export function Jogo() {
   const [aviso, setAviso] = useState<Aviso | null>(null);
   const [esperandoOk, setEsperandoOk] = useState(false);
   const [fim, setFim] = useState(false);
-
+  const [niveis, setNiveis] = useState<Record<number, number>>({});
+  
   const ref = useRef({ jogadores, donos, atual, compra, esperandoOk });
   ref.current = { jogadores, donos, atual, compra, esperandoOk };
   const ocupadoRef = useRef(false);
   const rolandoRef = useRef(false);
+const evoluirPropriedade = (casaId: number) => {
+  const jogadorAtual = jogadores[atual];
+  const nivelAtual = niveis[casaId] || 0;
+  const custoEvolucao = 5000;
 
+  if (donos[casaId] === jogadorAtual.id && nivelAtual < 3 && jogadorAtual.dinheiro >= custoEvolucao) {
+    setJogadores(prev => prev.map((j, idx) => idx === atual ? { ...j, dinheiro: j.dinheiro - custoEvolucao } : j));
+    setNiveis(prev => ({ ...prev, [casaId]: nivelAtual + 1 }));
+  }
+};
+
+const comprarDeAdversario = (casaId: number, precoBase: number) => {
+  const jogadorAtual = jogadores[atual];
+  const donoAtualId = donos[casaId];
+
+  if (donoAtualId !== undefined && donoAtualId !== jogadorAtual.id) {
+    const nivelAtual = niveis[casaId] || 0;
+    const valorAquisicao = Math.round(precoBase * (1.5 + nivelAtual * 0.2));
+
+    if (jogadorAtual.dinheiro >= valorAquisicao) {
+      setJogadores(prev => prev.map(j => {
+        if (j.id === jogadorAtual.id) return { ...j, dinheiro: j.dinheiro - valorAquisicao };
+        if (j.id === donoAtualId) return { ...j, dinheiro: j.dinheiro + valorAquisicao };
+        return j;
+      }));
+
+      setDonos(prev => ({ ...prev, [casaId]: jogadorAtual.id }));
+    }
+  }
+};
 
 
 
