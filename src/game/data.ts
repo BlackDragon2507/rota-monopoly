@@ -1,86 +1,159 @@
-export type Categoria = "armazem" | "caminhao" | "porto" | "ferrovia";
+import { Casa, CartaEvento } from './types';
 
-export type Tile =
-  | { kind: "inicio"; nome: string }
-  | { kind: "parada"; nome: string }
-  | { kind: "evento"; nome: string }
-  | { kind: "taxa"; nome: string; valor: number }
-  | { kind: "bonus"; nome: string; valor: number }
-  | {
-      kind: "prop";
-      nome: string;
-      categoria: Categoria;
-      preco: number;
-      aluguel: number;
-      sigla: string;
-    };
+export const CARTAS_EVENTO: CartaEvento[] = [
+  // --- Movimentação e Tráfego (6 Cartas) ---
+  {
+    id: 'transito',
+    titulo: 'Trânsito Intenso',
+    descricao: 'Sua frota ficou presa em um grande engarrafamento na rodovia. Fique 1 rodada sem jogar.',
+    tipo: 'transito'
+  },
+  {
+    id: 'atalho',
+    titulo: 'Você Encontrou um Atalho',
+    descricao: 'Rota alternativa expressa e asfaltada! Avance 3 casas.',
+    tipo: 'atalho',
+    casasAvançar: 3
+  },
+  {
+    id: 'obras_pista',
+    titulo: 'Obras na Pista',
+    descricao: 'Trecho interditado para recapeamento. Volte 2 casas.',
+    tipo: 'atalho',
+    casasAvançar: -2
+  },
+  {
+    id: 'pneu_furado',
+    titulo: 'Pneu Furado',
+    descricao: 'Um pneu estourou na estrada. Perca a vez para realizar a troca com segurança.',
+    tipo: 'transito'
+  },
+  {
+    id: 'pedagio_expresso',
+    titulo: 'Tag Pedágio Expresso',
+    descricao: 'Sua frota usou a cabine de cobrança automática e evitou filas. Avance 2 casas.',
+    tipo: 'atalho',
+    casasAvançar: 2
+  },
+  {
+    id: 'chuva_forte',
+    titulo: 'Tempestade na Serra',
+    descricao: 'Pista escorregadia e pouca visibilidade. Reduza a velocidade e volte 1 casa.',
+    tipo: 'atalho',
+    casasAvançar: -1
+  },
 
-const MULTIPLICADOR = 100;
+  // --- Finanças e Parcerias (6 Cartas) ---
+  {
+    id: 'parceria',
+    titulo: 'Parceria Comercial',
+    descricao: 'Uma grande multinacional fechou contrato exclusivo de frete com sua frota. Receba R$ 20.000.',
+    tipo: 'parceria',
+    valor: 20000
+  },
+  {
+    id: 'restituicao_imposto',
+    titulo: 'Restituição de Pedágio',
+    descricao: 'Sua empresa recebeu um incentivo fiscal do governo estadual. Receba R$ 10.000.',
+    tipo: 'parceria',
+    valor: 10000
+  },
+  {
+    id: 'combustivel_alta',
+    titulo: 'Alta no Diesel',
+    descricao: 'O preço do combustível subiu de surpresa nas bombas. Pague R$ 5.000 de taxa operacional.',
+    tipo: 'parceria',
+    valor: -5000
+  },
+  {
+    id: 'manutencao_frota',
+    titulo: 'Manutenção Preventiva',
+    descricao: 'Revisão periódica de freios e suspensão efetuada na oficina. Pague R$ 8.000.',
+    tipo: 'parceria',
+    valor: -8000
+  },
+  {
+    id: 'patrocinio_logistico',
+    titulo: 'Contrato de Exclusividade',
+    descricao: 'Um fabricante de peças fechou patrocínio com a sua marca. Receba R$ 15.000.',
+    tipo: 'parceria',
+    valor: 15000
+  },
+  {
+    id: 'seguro_frota',
+    titulo: 'Renovação do Seguro',
+    descricao: 'Apólice de seguro contra sinistros e roubo renovada. Pague R$ 7.000.',
+    tipo: 'parceria',
+    valor: -7000
+  },
 
-const prop = (
-  nome: string,
-  sigla: string,
-  categoria: Categoria,
-  preco: number,
-): Tile => ({
-  kind: "prop",
-  nome,
-  sigla,
-  categoria,
-  preco: preco * MULTIPLICADOR,
-  aluguel: Math.round(preco * MULTIPLICADOR * 0.22),
-});
+  // --- Agilidade e Logística Expressa (4 Cartas) ---
+  {
+    id: 'carga_prioritaria',
+    titulo: 'Carga Prioritária',
+    descricao: 'Entrega urgente solicitada com bonificação! Jogue os dados novamente.',
+    tipo: 'carga_prioritaria'
+  },
+  {
+    id: 'rastreamento_satelite',
+    titulo: 'Sistema de Rastreamento',
+    descricao: 'Sua frota otimizou o tempo de viagem com rotas otimizadas por IA. Jogue os dados novamente.',
+    tipo: 'carga_prioritaria'
+  },
+  {
+    id: 'frete_expresso',
+    titulo: 'Frete Corujão',
+    descricao: 'Entrega realizada no período noturno com pista livre. Jogue os dados novamente.',
+    tipo: 'carga_prioritaria'
+  },
+  {
+    id: 'logistica_reversa',
+    titulo: 'Carga de Retorno',
+    descricao: 'O caminhão não voltou vazio e aproveitou o frete de volta! Receba R$ 12.000.',
+    tipo: 'parceria',
+    valor: 12000
+  },
 
-/** 28 casas no perímetro de um tabuleiro 8x8 */
-export const TABULEIRO: Tile[] = [
-  { kind: "inicio", nome: "Centro de Distribuição" },
-  prop("Armazém Santos", "AS", "armazem", 120),
-  prop("Frota Leve SP", "FL", "caminhao", 100),
-  { kind: "evento", nome: "Boletim Logístico" },
-  prop("Porto de Paranaguá", "PP", "porto", 220),
-  prop("Armazém Campinas", "AC", "armazem", 140),
-  { kind: "taxa", nome: "Pedágio Nacional", valor: 9000 },
-  { kind: "parada", nome: "Pátio de Manutenção" },
-  prop("Ferrovia Centro-Oeste", "FC", "ferrovia", 200),
-  prop("Frota Pesada MG", "FP", "caminhao", 160),
-  { kind: "evento", nome: "Boletim Logístico" },
-  prop("Armazém Curitiba", "AR", "armazem", 170),
-  prop("Porto de Itajaí", "PI", "porto", 240),
-  { kind: "bonus", nome: "Contrato Fechado", valor: 15000 },
-  { kind: "inicio", nome: "Hub Internacional" },
-  prop("Ferrovia Norte-Sul", "FN", "ferrovia", 230),
-  prop("Frota Refrigerada", "FR", "caminhao", 190),
-  { kind: "evento", nome: "Boletim Logístico" },
-  prop("Porto de Suape", "PS", "porto", 260),
-  prop("Armazém Manaus", "AM", "armazem", 200),
-  { kind: "taxa", nome: "Multa Ambiental", valor: 12000 },
-  { kind: "parada", nome: "Fila na Alfândega" },
-  prop("Ferrovia Carajás", "FJ", "ferrovia", 280),
-  prop("Frota Internacional", "FI", "caminhao", 240),
-  { kind: "evento", nome: "Boletim Logístico" },
-  prop("Porto de Santos", "PT", "porto", 320),
-  prop("Armazém Automatizado", "AA", "armazem", 300),
-  { kind: "bonus", nome: "Bônus de Eficiência", valor: 20000 },
+  // --- Fiscalização e Documentação (4 Cartas) ---
+  {
+    id: 'fiscalizacao_surpresa',
+    titulo: 'Blitz da ANTT',
+    descricao: 'A fiscalização parou o seu caminhão para checar a nota fiscal. Fique 1 rodada sem jogar ou pague R$ 3.000 de liberação expressa.',
+    tipo: 'multa_fiscalizacao',
+    valor: 3000
+  },
+  {
+    id: 'excesso_peso',
+    titulo: 'Excesso de Carga',
+    descricao: 'Sua carreta foi flagrada com excesso de peso no posto de balança. Pague R$ 6.000 de multa.',
+    tipo: 'parceria',
+    valor: -6000
+  },
+  {
+    id: 'documentacao_ok',
+    titulo: 'Selo Frota Verde',
+    descricao: 'Sua empresa ganhou um prêmio por emissão reduzida de poluentes. Receba R$ 8.000.',
+    tipo: 'parceria',
+    valor: 8000
+  },
+  {
+    id: 'tacografo_vencido',
+    titulo: 'Tacógrafo Desatualizado',
+    descricao: 'Infração detectada na vistoria de rotina da fiscalização. Pague R$ 4.000.',
+    tipo: 'parceria',
+    valor: -4000
+  }
 ];
 
-export const CATEGORIA_LABEL: Record<Categoria, string> = {
-  armazem: "Armazém",
-  caminhao: "Caminhão",
-  porto: "Porto",
-  ferrovia: "Ferrovia",
-};
-
-export type Evento = { texto: string; delta: number };
-
-export const EVENTOS: Evento[] = [
-  { texto: "Greve dos caminhoneiros: você perde entregas.", delta: -14000 },
-  { texto: "Combustível em alta, custos operacionais sobem.", delta: -11000 },
-  { texto: "Novo contrato de e-commerce assinado!", delta: 26000 },
-  { texto: "Container extraviado no porto.", delta: -18000 },
-  { texto: "Otimização de rotas reduz custos em 12%.", delta: 19000 },
-  { texto: "Chuvas fecham a BR-101, frete atrasado.", delta: -9000 },
-  { texto: "Subsídio logístico do governo liberado.", delta: 21000 },
-  { texto: "Manutenção emergencial da frota.", delta: -13000 },
-  { texto: "Exportação recorde de grãos pela ferrovia.", delta: 30000 },
-  { texto: "Multa por excesso de peso na balança.", delta: -10000 },
+export const CASAS_INICIAIS: Casa[] = [
+  { id: 0, nome: 'Ponto de Partida', tipo: 'inicio' },
+  { id: 1, nome: 'Garagem Central', tipo: 'propriedade', propriedade: { id: 1, nome: 'Garagem Central', preco: 10000, aluguelBase: 1000, nivelEvolucao: 0 } },
+  { id: 2, nome: 'Evento de Rota', tipo: 'evento' },
+  { id: 3, nome: 'Depósito Sul', tipo: 'propriedade', propriedade: { id: 3, nome: 'Depósito Sul', preco: 12000, aluguelBase: 1200, nivelEvolucao: 0 } },
+  { id: 4, nome: 'Imposto de Roda', tipo: 'imposto' },
+  { id: 5, nome: 'Fiscalização', tipo: 'fiscalizacao' },
+  { id: 6, nome: 'Terminal Leste', tipo: 'propriedade', propriedade: { id: 6, nome: 'Terminal Leste', preco: 15000, aluguelBase: 1500, nivelEvolucao: 0 } },
+  { id: 7, nome: 'Evento de Rota', tipo: 'evento' },
+  { id: 8, nome: 'Hub Norte', tipo: 'propriedade', propriedade: { id: 8, nome: 'Hub Norte', preco: 18000, aluguelBase: 1800, nivelEvolucao: 0 } },
+  { id: 9, nome: 'Parada Obrigatória', tipo: 'va_para_fiscalizacao' }
 ];
