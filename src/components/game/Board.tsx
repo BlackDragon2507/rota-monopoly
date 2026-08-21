@@ -48,11 +48,14 @@ type Props = {
 
 export function Board({ jogadores, donos, atual, destaque, onTileClick }: Props) {
   return (
-    <div className="relative aspect-[7/9] h-auto max-h-full w-full max-w-full rounded-3xl bg-mesa p-1 shadow-elev ring-1 ring-border md:p-2">
-      <div
-        className="grid h-full w-full gap-1 md:gap-1.5"
-        style={{ gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gridTemplateRows: "repeat(9, minmax(0, 1fr))" }}
-      >
+<div className="flex items-center justify-center min-h-[600px] w-full p-4">
+  <div 
+    className="grid h-full w-full max-w-[700px] aspect-square gap-2 bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-2xl relative"
+    style={{
+      gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+      gridTemplateRows: "repeat(7, minmax(0, 1fr))"
+    }}
+  >
         {TABULEIRO.map((tile, i) => {
           const { row, col } = gridPos(i);
           const dono = donos[i];
