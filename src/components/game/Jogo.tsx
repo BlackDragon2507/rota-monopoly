@@ -1,3 +1,8 @@
+import { useEffect } from 'react';
+import { io } from 'socket.io-client';
+
+// Cole a URL que você copiou do Render aqui:
+const socket = io('https://rota-monopoly.onrender.com');
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "./Board";
 import { Carteira } from "./Painel";
@@ -30,6 +35,26 @@ const novosJogadores = (): Jogador[] => [
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export function Jogo() {
+  // Sincronizar jogadas dos adversários online
+useEffect(() => {
+  socket.on('receber_jogada', (novoEstado) => {
+    if (novoEstado.jogadores) setJogadores(novoEstado.jogadores);
+    if (novoEstado.donos) setDonos(novoEstado.donos);
+    if (novoEstado.atual !== undefined) setAtual(novoEstado.atual);
+  });
+
+  return () => {
+    socket.off('receber_jogada');
+  };
+}, []);
+
+// Função auxiliar para disparar as atualizações para o servidor
+const notificarServidor = (dadosAtualizados: any) => {
+  socket.emit('realizar_jogada', {
+    codigoSala: 'SALA_PADRAO', // Ou o código da sala criada
+    estadoJogo: dadosAtualizados
+  });
+};
   const [jogadores, setJogadores] = useState<Jogador[]>(novosJogadores);
   const [donos, setDonos] = useState<Record<number, number | undefined>>({});
   const [atual, setAtual] = useState(0);
